@@ -1,18 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PegawaiController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::get('/', [AuthController::class, 'login']);
 
-Route::get('/', function () {
-    return view('welcome');
+Route::post('/proses-login', [AuthController::class, 'prosesLogin']);
+
+Route::get('/logout', [AuthController::class, 'logout']);
+
+Route::get('/dashboard', function () {
+    return view('dashboard.index');
+});
+
+Route::get('/pegawai', [PegawaiController::class, 'index']);
+
+Route::post('/pegawai/store', [PegawaiController::class, 'store']);
+
+Route::get('/user', function () {
+    return view('user.index');
+});
+
+Route::get('/absensi', function () {
+    return view('absensi.index');
+});
+
+Route::get('/approval', function () {
+    return view('approval.index');
+});
+
+Route::get('/laporan', function () {
+    return view('laporan.index');
 });
