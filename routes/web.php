@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PegawaiController;
 
 /*
@@ -10,11 +10,11 @@ use App\Http\Controllers\PegawaiController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [AuthController::class, 'login']);
+// Route::get('/', [AuthController::class, 'login']);
 
-Route::post('/proses-login', [AuthController::class, 'prosesLogin']);
+// Route::post('/proses-login', [AuthController::class, 'prosesLogin']);
 
-Route::get('/logout', [AuthController::class, 'logout']);
+// Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::get('/dashboard', function () {
     return view('dashboard.index');
