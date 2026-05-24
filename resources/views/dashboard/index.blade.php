@@ -1,105 +1,344 @@
-@extends('adminlte::page')
+@extends('layouts.index')
 
 @section('title', 'Dashboard')
 
-@section('content_header')
-    <h1>Dashboard HRD</h1>
-@stop
+@section('page-title', 'Dashboard SIPENA')
 
 @section('content')
 
-<div class="row">
+{{-- STATISTIC CARDS --}}
+<div class="row row-deck row-cards">
 
-    <div class="col-lg-3 col-6">
+    {{-- TOTAL PEGAWAI --}}
+    <div class="col-sm-6 col-lg-3">
 
-        <div class="small-box bg-info">
+        <div class="card card-sm">
 
-            <div class="inner">
-                <h3>120</h3>
-                <p>Total Pegawai</p>
-            </div>
+            <div class="card-body">
 
-        </div>
+                <div class="row align-items-center">
 
-    </div>
+                    <div class="col-auto">
 
-    <div class="col-lg-3 col-6">
+                        <span class="bg-primary text-white avatar">
 
-        <div class="small-box bg-success">
+                            👨‍💼
 
-            <div class="inner">
-                <h3>100</h3>
-                <p>Hadir</p>
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-3 col-6">
-
-        <div class="small-box bg-warning">
-
-            <div class="inner">
-                <h3>5</h3>
-                <p>Izin</p>
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-3 col-6">
-
-        <div class="small-box bg-danger">
-
-            <div class="inner">
-                <h3>3</h3>
-                <p>Alfa</p>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="card">
-
-    <div class="card-header">
-        <h3 class="card-title">
-            Aktivitas Absensi
-        </h3>
-    </div>
-
-    <div class="card-body">
-
-        <table class="table table-bordered">
-
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Status</th>
-                    <th>Tanggal</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>Putri</td>
-                    <td>
-                        <span class="badge bg-success">
-                            Hadir
                         </span>
-                    </td>
-                    <td>17 Mei 2026</td>
-                </tr>
-            </tbody>
 
-        </table>
+                    </div>
+
+                    <div class="col">
+
+                        <div class="font-weight-medium">
+                            Total Pegawai
+                        </div>
+
+                        <div class="text-secondary">
+                            Pegawai aktif perusahaan
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="h1 mt-3 mb-0">
+                    120
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- ABSENSI HARI INI --}}
+    <div class="col-sm-6 col-lg-3">
+
+        <div class="card card-sm">
+
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-auto">
+
+                        <span class="bg-success text-white avatar">
+
+                            📅
+
+                        </span>
+
+                    </div>
+
+                    <div class="col">
+
+                        <div class="font-weight-medium">
+                            Absensi Hari Ini
+                        </div>
+
+                        <div class="text-secondary">
+                            Pegawai hadir hari ini
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="h1 mt-3 mb-0 text-success">
+                    98
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- PENGAJUAN CUTI --}}
+    <div class="col-sm-6 col-lg-3">
+
+        <div class="card card-sm">
+
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-auto">
+
+                        <span class="bg-warning text-white avatar">
+
+                            📄
+
+                        </span>
+
+                    </div>
+
+                    <div class="col">
+
+                        <div class="font-weight-medium">
+                            Pengajuan
+                        </div>
+
+                        <div class="text-secondary">
+                            Menunggu approval
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="h1 mt-3 mb-0 text-warning">
+                    12
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- ALFA --}}
+    <div class="col-sm-6 col-lg-3">
+
+        <div class="card card-sm">
+
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-auto">
+
+                        <span class="bg-danger text-white avatar">
+
+                            ❌
+
+                        </span>
+
+                    </div>
+
+                    <div class="col">
+
+                        <div class="font-weight-medium">
+                            Tidak Hadir
+                        </div>
+
+                        <div class="text-secondary">
+                            Pegawai alfa hari ini
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="h1 mt-3 mb-0 text-danger">
+                    5
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
 </div>
 
-@stop   
+
+{{-- TABLE ABSENSI --}}
+<div class="row mt-4">
+
+    <div class="col-lg-8">
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    Data Absensi Hari Ini
+                </h3>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-vcenter card-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>NIP</th>
+                            <th>Nama</th>
+                            <th>Divisi</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>23001</td>
+
+                            <td>Budi Santoso</td>
+
+                            <td>
+                                <span class="badge bg-blue-lt">
+                                    IT
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success-lt">
+                                    Hadir
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>23002</td>
+
+                            <td>Siti Aisyah</td>
+
+                            <td>
+                                <span class="badge bg-purple-lt">
+                                    HRD
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning-lt">
+                                    Cuti
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>23003</td>
+
+                            <td>Andi Saputra</td>
+
+                            <td>
+                                <span class="badge bg-cyan-lt">
+                                    Finance
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger-lt">
+                                    Alfa
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- QUICK MENU --}}
+    <div class="col-lg-4">
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    Quick Access
+                </h3>
+
+            </div>
+
+            <div class="list-group list-group-flush">
+
+                <a href="/pegawai"
+                   class="list-group-item list-group-item-action">
+
+                    👨‍💼 Kelola Pegawai
+
+                </a>
+
+                <a href="/absensi"
+                   class="list-group-item list-group-item-action">
+
+                    📅 Data Absensi
+
+                </a>
+
+                <a href="/approval"
+                   class="list-group-item list-group-item-action">
+
+                    ✅ Approval Pengajuan
+
+                </a>
+
+                <a href="/laporan"
+                   class="list-group-item list-group-item-action">
+
+                    📊 Laporan Absensi
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@endsection
