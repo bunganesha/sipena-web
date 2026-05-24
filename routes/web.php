@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PengajuanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,12 +22,25 @@ Route::get('/dashboard', function () {
     return view('dashboard.index');
 });
 
-Route::get('/pegawai', [PegawaiController::class, 'index']);
+Route::prefix('pegawai')->name('pegawai.')->group(function () {
+    Route::get('/', [PegawaiController::class, 'index'])->name('index');
+    Route::post('/', [PegawaiController::class, 'store'])->name('store');
+    Route::put('/{id}', [PegawaiController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PegawaiController::class, 'destroy'])->name('destroy');
+});
 
-Route::post('/pegawai/store', [PegawaiController::class, 'store']);
+Route::prefix('user')->name('user.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::put('/{id}', [UserController::class, 'update'])->name('update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+});
 
-Route::get('/user', function () {
-    return view('user.index');
+Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
+    Route::get('/', [PengajuanController::class, 'index'])->name('index');
+    Route::post('/', [PengajuanController::class, 'store'])->name('store');
+    Route::put('/{id}', [PengajuanController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PengajuanController::class, 'destroy'])->name('destroy');
 });
 
 Route::get('/absensi', function () {
@@ -34,22 +49,6 @@ Route::get('/absensi', function () {
 
 Route::get('/approval', function () {
     return view('approval.index');
-});
-
-Route::get('/pengajuan', function () {
-    return view('pengajuan.index');
-});
-
-Route::get('/cuti', function () {
-    return view('cuti.index');
-});
-
-Route::get('/izin', function () {
-    return view('izin.index');
-});
-
-Route::get('/sakit', function () {
-    return view('sakit.index');
 });
 
 Route::get('/laporan', function () {
