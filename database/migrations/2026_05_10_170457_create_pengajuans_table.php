@@ -9,29 +9,35 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pengajuans', function (Blueprint $table) {
-            $table->id('id_pengajuan');
+            $table->id();
 
-            $table->string('nip');
+            // RELASI KE PEGAWAI (FIX)
+            $table->foreignId('pegawai_id')
+                ->constrained('pegawais')
+                ->onDelete('cascade');
 
-            $table->string('jenis_pengajuan');
+            $table->enum('jenis_pengajuan', [
+                'cuti',
+                'izin',
+                'sakit'
+            ]);
 
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
 
             $table->text('alasan');
 
-            $table->enum('status_approval', [
-                'pending',
-                'disetujui',
-                'ditolak'
-            ])->default('pending');
+            // APPROVAL FLOW
+            $table->enum('status_spv', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('catatan_spv')->nullable();
+
+            $table->enum('status_manager', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('catatan_manager')->nullable();
+
+            $table->enum('status_hrd', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('catatan_hrd')->nullable();
 
             $table->timestamps();
-
-            $table->foreign('nip')
-                  ->references('nip')
-                  ->on('pegawais')
-                  ->onDelete('cascade');
         });
     }
 

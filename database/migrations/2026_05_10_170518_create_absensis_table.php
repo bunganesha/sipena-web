@@ -9,9 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('absensis', function (Blueprint $table) {
-            $table->id('id_absensi');
+            $table->id();
 
-            $table->string('nip');
+            // RELASI KE PEGAWAI (FIX)
+            $table->foreignId('pegawai_id')
+                ->constrained('pegawais')
+                ->onDelete('cascade');
 
             $table->date('tanggal');
 
@@ -29,10 +32,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('nip')
-                  ->references('nip')
-                  ->on('pegawais')
-                  ->onDelete('cascade');
+            // OPTIONAL: cegah double absensi per hari
+            $table->unique(['pegawai_id', 'tanggal']);
         });
     }
 

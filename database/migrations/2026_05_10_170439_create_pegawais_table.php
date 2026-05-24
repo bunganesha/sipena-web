@@ -9,9 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pegawais', function (Blueprint $table) {
-            $table->string('nip')->primary();
+            $table->id();
 
-            $table->unsignedBigInteger('id_user')->unique();
+            $table->foreignId('user_id')
+                ->unique()
+                ->constrained('users')
+                ->onDelete('cascade');
+
+            $table->string('nip')->unique();
 
             $table->string('nama');
             $table->string('jabatan');
@@ -20,14 +25,10 @@ return new class extends Migration
             $table->integer('jatah_cuti')->default(12);
             $table->integer('sisa_cuti')->default(12);
 
-            $table->enum('status', ['aktif', 'nonaktif']);
+            $table->enum('status', ['aktif', 'nonaktif'])
+                ->default('aktif');
 
             $table->timestamps();
-
-            $table->foreign('id_user')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
         });
     }
 

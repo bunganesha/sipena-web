@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('password');
 
             $table->enum('role', [
-                'admin',
+                'hrd',
+                'spv',
+                'manager',
                 'pegawai'
-            ]);
+            ])->default('pegawai');
 
             $table->rememberToken();
 
