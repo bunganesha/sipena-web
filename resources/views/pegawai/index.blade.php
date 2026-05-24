@@ -1,58 +1,216 @@
-@extends('adminlte::page')
+@extends('layouts.index')
 
 @section('title', 'Data Pegawai')
 
-@section('content_header')
-    <h1>Data Pegawai</h1>
-@stop
+@section('page-title', 'Data Pegawai')
+
+@section('page-action')
+
+<button class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#modalPegawai">
+
+    + Tambah Pegawai
+
+</button>
+
+@endsection
 
 @section('content')
 
 <div class="card">
 
-    <div class="card-header">
+    {{-- HEADER --}}
+    <div class="card-body border-bottom py-3">
 
-        <button class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#modalPegawai">
+        <div class="d-flex align-items-center">
 
-            Tambah Pegawai
+            <div class="text-secondary">
+                Data seluruh pegawai perusahaan
+            </div>
 
-        </button>
+            <div class="ms-auto text-secondary">
+
+                <div class="input-icon">
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Search pegawai...">
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="card-body">
+    {{-- TABLE --}}
+    <div class="table-responsive">
 
-        <table class="table table-bordered">
+        <table class="table table-vcenter card-table">
 
-            <thead class="table-dark">
+            <thead>
 
                 <tr>
+
                     <th>NIP</th>
-                    <th>Nama</th>
+
+                    <th>Nama Pegawai</th>
+
                     <th>Jabatan</th>
+
                     <th>Divisi</th>
+
+                    <th>Status</th>
+
                     <th>Jatah Cuti</th>
+
+                    <th>Sisa Cuti</th>
+
+                    <th class="w-1">
+                        Aksi
+                    </th>
+
                 </tr>
 
             </thead>
 
             <tbody>
 
-                @foreach($pegawai as $p)
+                @forelse($pegawai as $p)
 
                 <tr>
 
-                    <td>{{ $p->nip }}</td>
-                    <td>{{ $p->nama }}</td>
-                    <td>{{ $p->jabatan }}</td>
-                    <td>{{ $p->divisi }}</td>
-                    <td>{{ $p->jatah_cuti }} Hari</td>
+                    {{-- NIP --}}
+                    <td>
+
+                        {{ $p->nip }}
+
+                    </td>
+
+
+                    {{-- NAMA --}}
+                    <td>
+
+                        <div class="d-flex py-1 align-items-center">
+
+                            <span class="avatar me-2 bg-primary text-white">
+
+                                {{ strtoupper(substr($p->nama, 0, 1)) }}
+
+                            </span>
+
+                            <div class="flex-fill">
+
+                                <div class="font-weight-medium">
+
+                                    {{ $p->nama }}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    {{-- JABATAN --}}
+                    <td>
+
+                        {{ $p->jabatan }}
+
+                    </td>
+
+
+                    {{-- DIVISI --}}
+                    <td>
+
+                        <span class="badge bg-blue-lt">
+
+                            {{ $p->divisi }}
+
+                        </span>
+
+                    </td>
+
+
+                    {{-- STATUS --}}
+                    <td>
+
+                        <span class="badge bg-success-lt">
+
+                            Aktif
+
+                        </span>
+
+                    </td>
+
+
+                    {{-- JATAH CUTI --}}
+                    <td>
+
+                        <span class="badge bg-success-lt">
+
+                            {{ $p->jatah_cuti }} Hari
+
+                        </span>
+
+                    </td>
+
+
+                    {{-- SISA CUTI --}}
+                    <td>
+
+                        <span class="badge bg-warning-lt">
+
+                            3 Hari
+
+                        </span>
+
+                    </td>
+
+
+                    {{-- AKSI --}}
+                    <td>
+
+                        <div class="btn-list flex-nowrap">
+
+                            <a href="#"
+                               class="btn btn-warning btn-sm">
+
+                                Edit
+
+                            </a>
+
+                            <a href="#"
+                               class="btn btn-danger btn-sm">
+
+                                Hapus
+
+                            </a>
+
+                        </div>
+
+                    </td>
 
                 </tr>
 
-                @endforeach
+                @empty
+
+                <tr>
+
+                    <td colspan="8"
+                        class="text-center text-secondary py-5">
+
+                        Belum ada data pegawai
+
+                    </td>
+
+                </tr>
+
+                @endforelse
 
             </tbody>
 
@@ -62,10 +220,13 @@
 
 </div>
 
-<div class="modal fade"
-     id="modalPegawai">
 
-    <div class="modal-dialog">
+{{-- MODAL TAMBAH PEGAWAI --}}
+<div class="modal modal-blur fade"
+     id="modalPegawai"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
         <div class="modal-content">
 
@@ -74,73 +235,162 @@
 
                 @csrf
 
-                <div class="modal-header bg-primary">
+                {{-- HEADER --}}
+                <div class="modal-header">
 
                     <h5 class="modal-title">
+
                         Tambah Pegawai
+
                     </h5>
 
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+
+                    </button>
+
                 </div>
 
+
+                {{-- BODY --}}
                 <div class="modal-body">
 
-                    <div class="form-group mb-3">
+                    <div class="row">
 
-                        <label>NIP</label>
+                        {{-- NIP --}}
+                        <div class="col-md-6 mb-3">
 
-                        <input type="text"
-                               name="nip"
-                               class="form-control">
+                            <label class="form-label">
 
-                    </div>
+                                NIP
 
-                    <div class="form-group mb-3">
+                            </label>
 
-                        <label>Nama</label>
+                            <input type="text"
+                                   name="nip"
+                                   class="form-control"
+                                   required>
 
-                        <input type="text"
-                               name="nama"
-                               class="form-control">
+                        </div>
 
-                    </div>
 
-                    <div class="form-group mb-3">
+                        {{-- NAMA --}}
+                        <div class="col-md-6 mb-3">
 
-                        <label>Jabatan</label>
+                            <label class="form-label">
 
-                        <input type="text"
-                               name="jabatan"
-                               class="form-control">
+                                Nama Pegawai
 
-                    </div>
+                            </label>
 
-                    <div class="form-group mb-3">
+                            <input type="text"
+                                   name="nama"
+                                   class="form-control"
+                                   required>
 
-                        <label>Divisi</label>
+                        </div>
 
-                        <input type="text"
-                               name="divisi"
-                               class="form-control">
 
-                    </div>
+                        {{-- JABATAN --}}
+                        <div class="col-md-6 mb-3">
 
-                    <div class="form-group mb-3">
+                            <label class="form-label">
 
-                        <label>Jatah Cuti</label>
+                                Jabatan
 
-                        <input type="number"
-                               name="jatah_cuti"
-                               class="form-control"
-                               value="3">
+                            </label>
+
+                            <input type="text"
+                                   name="jabatan"
+                                   class="form-control"
+                                   required>
+
+                        </div>
+
+
+                        {{-- DIVISI --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Divisi
+
+                            </label>
+
+                            <input type="text"
+                                   name="divisi"
+                                   class="form-control"
+                                   required>
+
+                        </div>
+
+
+                        {{-- STATUS --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Status Pegawai
+
+                            </label>
+
+                            <select name="status"
+                                    class="form-select">
+
+                                <option value="Aktif">
+
+                                    Aktif
+
+                                </option>
+
+                                <option value="Nonaktif">
+
+                                    Nonaktif
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        {{-- JATAH CUTI --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Jatah Cuti
+
+                            </label>
+
+                            <input type="number"
+                                   name="jatah_cuti"
+                                   class="form-control"
+                                   value="3">
+
+                        </div>
 
                     </div>
 
                 </div>
 
+
+                {{-- FOOTER --}}
                 <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn me-auto"
+                            data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
                     <button class="btn btn-primary">
-                        Simpan
+
+                        Simpan Pegawai
+
                     </button>
 
                 </div>
@@ -153,4 +403,4 @@
 
 </div>
 
-@stop
+@endsection
