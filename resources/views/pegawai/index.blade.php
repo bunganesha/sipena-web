@@ -7,8 +7,8 @@
 @section('page-action')
 
 <button class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#modalPegawai">
+    data-bs-toggle="modal"
+    data-bs-target="#modalPegawai">
 
     + Tambah Pegawai
 
@@ -30,15 +30,11 @@
             </div>
 
             <div class="ms-auto text-secondary">
-
                 <div class="input-icon">
-
                     <input type="text"
-                           class="form-control"
-                           placeholder="Search pegawai...">
-
+                        class="form-control"
+                        placeholder="Search pegawai...">
                 </div>
-
             </div>
 
         </div>
@@ -51,163 +47,81 @@
         <table class="table table-vcenter card-table">
 
             <thead>
-
                 <tr>
-
                     <th>NIP</th>
-
-                    <th>Nama Pegawai</th>
-
+                    <th>Nama</th>
                     <th>Jabatan</th>
-
                     <th>Divisi</th>
-
                     <th>Status</th>
-
                     <th>Jatah Cuti</th>
-
                     <th>Sisa Cuti</th>
-
-                    <th class="w-1">
-                        Aksi
-                    </th>
-
+                    <th>Aksi</th>
                 </tr>
-
             </thead>
 
             <tbody>
 
-                @forelse($pegawai as $p)
-
+                @forelse($pegawais as $pegawai)
                 <tr>
 
-                    {{-- NIP --}}
+                    <td>{{ $pegawai->nip }}</td>
+                    <td>{{ $pegawai->nama }}</td>
+                    <td>{{ $pegawai->jabatan }}</td>
+                    <td>{{ $pegawai->divisi }}</td>
+
                     <td>
-
-                        {{ $p->nip }}
-
-                    </td>
-
-
-                    {{-- NAMA --}}
-                    <td>
-
-                        <div class="d-flex py-1 align-items-center">
-
-                            <span class="avatar me-2 bg-primary text-white">
-
-                                {{ strtoupper(substr($p->nama, 0, 1)) }}
-
-                            </span>
-
-                            <div class="flex-fill">
-
-                                <div class="font-weight-medium">
-
-                                    {{ $p->nama }}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-
-                    {{-- JABATAN --}}
-                    <td>
-
-                        {{ $p->jabatan }}
-
-                    </td>
-
-
-                    {{-- DIVISI --}}
-                    <td>
-
-                        <span class="badge bg-blue-lt">
-
-                            {{ $p->divisi }}
-
-                        </span>
-
-                    </td>
-
-
-                    {{-- STATUS --}}
-                    <td>
-
                         <span class="badge bg-success-lt">
-
-                            Aktif
-
+                            {{ $pegawai->status }}
                         </span>
-
                     </td>
 
+                    <td>{{ $pegawai->jatah_cuti }}</td>
+                    <td>{{ $pegawai->sisa_cuti }}</td>
 
-                    {{-- JATAH CUTI --}}
                     <td>
-
-                        <span class="badge bg-success-lt">
-
-                            {{ $p->jatah_cuti }} Hari
-
-                        </span>
-
-                    </td>
-
-
-                    {{-- SISA CUTI --}}
-                    <td>
-
-                        <span class="badge bg-warning-lt">
-
-                            3 Hari
-
-                        </span>
-
-                    </td>
-
-
-                    {{-- AKSI --}}
-                    <td>
-
                         <div class="btn-list flex-nowrap">
 
-                            <a href="#"
-                               class="btn btn-warning btn-sm">
-
+                            {{-- EDIT --}}
+                            <button class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalEditPegawai"
+                                onclick="editPegawai(
+                                    '{{ $pegawai->id }}',
+                                    '{{ $pegawai->nip }}',
+                                    '{{ $pegawai->nama }}',
+                                    '{{ $pegawai->jabatan }}',
+                                    '{{ $pegawai->divisi }}',
+                                    '{{ $pegawai->status }}',
+                                    '{{ $pegawai->jatah_cuti }}',
+                                    '{{ $pegawai->sisa_cuti }}'
+                                )">
                                 Edit
+                            </button>
 
-                            </a>
+                            {{-- DELETE --}}
+                            <form action="{{ route('pegawai.destroy', $pegawai->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin hapus data ini?')">
 
-                            <a href="#"
-                               class="btn btn-danger btn-sm">
+                                @csrf
+                                @method('DELETE')
 
-                                Hapus
+                                <button class="btn btn-danger btn-sm">
+                                    Hapus
+                                </button>
 
-                            </a>
+                            </form>
 
                         </div>
-
                     </td>
 
                 </tr>
-
                 @empty
 
                 <tr>
-
-                    <td colspan="8"
-                        class="text-center text-secondary py-5">
-
-                        Belum ada data pegawai
-
+                    <td colspan="8" class="text-center text-muted">
+                        Tidak ada data pegawai
                     </td>
-
                 </tr>
 
                 @endforelse
@@ -220,179 +134,153 @@
 
 </div>
 
-
+{{-- ========================= --}}
 {{-- MODAL TAMBAH PEGAWAI --}}
+{{-- ========================= --}}
 <div class="modal modal-blur fade"
-     id="modalPegawai"
-     tabindex="-1">
+    id="modalPegawai"
+    tabindex="-1">
 
     <div class="modal-dialog modal-lg modal-dialog-centered">
 
         <div class="modal-content">
 
-            <form action="/pegawai/store"
-                  method="POST">
-
+            <form action="{{ route('pegawai.store') }}" method="POST">
                 @csrf
 
-                {{-- HEADER --}}
                 <div class="modal-header">
-
-                    <h5 class="modal-title">
-
-                        Tambah Pegawai
-
-                    </h5>
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-
-                    </button>
-
+                    <h5 class="modal-title">Tambah Pegawai</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-
-                {{-- BODY --}}
                 <div class="modal-body">
 
                     <div class="row">
 
-                        {{-- NIP --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                NIP
-
-                            </label>
-
-                            <input type="text"
-                                   name="nip"
-                                   class="form-control"
-                                   required>
-
+                            <label class="form-label">NIP</label>
+                            <input type="text" name="nip" class="form-control" required>
                         </div>
 
-
-                        {{-- NAMA --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Nama Pegawai
-
-                            </label>
-
-                            <input type="text"
-                                   name="nama"
-                                   class="form-control"
-                                   required>
-
+                            <label class="form-label">Nama</label>
+                            <input type="text" name="nama" class="form-control" required>
                         </div>
 
-
-                        {{-- JABATAN --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Jabatan
-
-                            </label>
-
-                            <input type="text"
-                                   name="jabatan"
-                                   class="form-control"
-                                   required>
-
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" name="jabatan" class="form-control" required>
                         </div>
 
-
-                        {{-- DIVISI --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Divisi
-
-                            </label>
-
-                            <input type="text"
-                                   name="divisi"
-                                   class="form-control"
-                                   required>
-
+                            <label class="form-label">Divisi</label>
+                            <input type="text" name="divisi" class="form-control" required>
                         </div>
 
-
-                        {{-- STATUS --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Status Pegawai
-
-                            </label>
-
-                            <select name="status"
-                                    class="form-select">
-
-                                <option value="Aktif">
-
-                                    Aktif
-
-                                </option>
-
-                                <option value="Nonaktif">
-
-                                    Nonaktif
-
-                                </option>
-
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
                             </select>
-
                         </div>
 
-
-                        {{-- JATAH CUTI --}}
                         <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Jatah Cuti
-
-                            </label>
-
-                            <input type="number"
-                                   name="jatah_cuti"
-                                   class="form-control"
-                                   value="3">
-
+                            <label class="form-label">Jatah Cuti</label>
+                            <input type="number" name="jatah_cuti" class="form-control" value="3">
                         </div>
 
                     </div>
 
                 </div>
 
-
-                {{-- FOOTER --}}
                 <div class="modal-footer">
-
-                    <button type="button"
-                            class="btn me-auto"
-                            data-bs-dismiss="modal">
-
+                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">
                         Batal
-
                     </button>
 
                     <button class="btn btn-primary">
+                        Simpan
+                    </button>
+                </div>
 
-                        Simpan Pegawai
+            </form>
 
+        </div>
+
+    </div>
+
+</div>
+
+{{-- ========================= --}}
+{{-- MODAL EDIT PEGAWAI --}}
+{{-- ========================= --}}
+<div class="modal modal-blur fade"
+    id="modalEditPegawai"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="formEditPegawai" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Pegawai</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NIP</label>
+                            <input type="text" name="nip" id="edit_nip" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama</label>
+                            <input type="text" name="nama" id="edit_nama" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" name="jabatan" id="edit_jabatan" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Divisi</label>
+                            <input type="text" name="divisi" id="edit_divisi" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="edit_status" class="form-select">
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jatah Cuti</label>
+                            <input type="number" name="jatah_cuti" id="edit_jatah_cuti" class="form-control">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">
+                        Batal
                     </button>
 
+                    <button class="btn btn-primary">
+                        Update
+                    </button>
                 </div>
 
             </form>
@@ -404,3 +292,20 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+function editPegawai(id, nip, nama, jabatan, divisi, status, jatah, sisa) {
+
+    document.getElementById('formEditPegawai').action = `/pegawai/${id}`;
+
+    document.getElementById('edit_nip').value = nip;
+    document.getElementById('edit_nama').value = nama;
+    document.getElementById('edit_jabatan').value = jabatan;
+    document.getElementById('edit_divisi').value = divisi;
+    document.getElementById('edit_status').value = status;
+    document.getElementById('edit_jatah_cuti').value = jatah;
+    document.getElementById('edit_sisa_cuti').value = sisa;
+}
+</script>
+@endpush

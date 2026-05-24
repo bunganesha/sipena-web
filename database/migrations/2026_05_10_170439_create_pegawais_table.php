@@ -11,13 +11,7 @@ return new class extends Migration
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')
-                ->unique()
-                ->constrained('users')
-                ->onDelete('cascade');
-
             $table->string('nip')->unique();
-
             $table->string('nama');
             $table->string('jabatan');
             $table->string('divisi');
@@ -25,8 +19,7 @@ return new class extends Migration
             $table->integer('jatah_cuti')->default(12);
             $table->integer('sisa_cuti')->default(12);
 
-            $table->enum('status', ['aktif', 'nonaktif'])
-                ->default('aktif');
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
 
             $table->timestamps();
         });

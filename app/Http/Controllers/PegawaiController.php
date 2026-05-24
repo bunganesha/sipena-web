@@ -2,29 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Pegawai;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
     public function index()
     {
-        $pegawai = Pegawai::all();
+        $pegawais = Pegawai::latest()->get();
+        return view('pegawai.index', compact('pegawais'));
+    }
 
-        return view('pegawai.index', compact('pegawai'));
+    public function create()
+    {
+        $users = User::doesntHave('pegawai')->get();
+        return view('pegawai.create', compact('users'));
     }
 
     public function store(Request $request)
-{
-    Pegawai::create([
-        'id_user' => 1,
-        'nip' => $request->nip,
-        'nama' => $request->nama,
-        'jabatan' => $request->jabatan,
-        'divisi' => $request->divisi,
-        'jatah_cuti' => $request->jatah_cuti,
-    ]);
+    {
+        $request->validate([
+            'nip' => 'required|unique:pegawais',
+            'nama' => 'required',
+            'jabatan' => 'required',
+            'divisi' => 'required',
+            'status' => 'required',
+        ]);
 
-        return redirect('/pegawai');
+        Pegawai::create([
+            'nip' => $request->nip,
+            'nama' => $request->nama,
+            'jabatan' => $request->jabatan,
+            'divisi' => $request->divisi,
+            'jatah_cuti' => 12,
+            'sisa_cuti' => 12,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('pegawai.index');
+    }
+
+    public function edit($id)
+    {
+        $pegawai = Pegawai::findOrFail($id);
+        return view('pegawai.edit', compact('pegawai'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $pegawai = Pegawai::findOrFail($id);
+
+        $pegawai->update([
+            'nip' => $request->nip,
+            'nama' => $request->nama,
+            'jabatan' => $request->jabatan,
+            'divisi' => $request->divisi,
+            'status' => $request->status,
+            'jatah_cuti' => $request->jatah_cuti
+        ]);
+
+        return redirect()->route('pegawai.index');
+    }
+
+    public function destroy($id)
+    {
+        Pegawai::findOrFail($id)->delete();
+        return redirect()->route('pegawai.index');
     }
 }

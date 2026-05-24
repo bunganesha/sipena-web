@@ -8,11 +8,16 @@ class Pegawai extends Model
 {
     protected $table = 'pegawais';
     protected $fillable = [
-    'id_user',
-    'nip',
-    'nama',
-    'jabatan',
-    'divisi',
-    'jatah_cuti'        
+        'nip',
+        'nama',
+        'jabatan',
+        'divisi',
+        'jatah_cuti',
+        'sisa_cuti',
+        'status'
     ];
+    public function pengajuans()
+    {
+        return $this->hasMany(Pengajuan::class);
+    }
 }
