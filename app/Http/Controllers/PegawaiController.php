@@ -8,20 +8,71 @@ use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
-    public function index()
+    // =========================
+    // TAMPIL DATA PEGAWAI
+    // =========================
+    public function index(Request $request)
     {
-        $pegawais = Pegawai::latest()->get();
+        // ROLE PERMISSION
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
+        // SEARCH
+        $search = $request->search;
+
+        $pegawais = Pegawai::when($search, function ($query) use ($search) {
+
+            $query->where('nama', 'like', "%{$search}%")
+                ->orWhere('nip', 'like', "%{$search}%")
+                ->orWhere('divisi', 'like', "%{$search}%");
+
+        })
+        ->latest()
+        ->get();
+
+        // HITUNG SISA CUTI
+        foreach ($pegawais as $pegawai) {
+
+            $jumlahCuti = \App\Models\Absensi::where(
+                'pegawai_id',
+                $pegawai->id
+            )
+            ->where('status_absensi', 'cuti')
+            ->count();
+
+            $pegawai->sisa_cuti =
+                $pegawai->jatah_cuti - $jumlahCuti;
+        }
+
         return view('pegawai.index', compact('pegawais'));
     }
 
+
+    // =========================
+    // FORM CREATE
+    // =========================
     public function create()
     {
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
         $users = User::doesntHave('pegawai')->get();
+
         return view('pegawai.create', compact('users'));
     }
 
+
+    // =========================
+    // SIMPAN DATA
+    // =========================
     public function store(Request $request)
     {
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
         $request->validate([
             'nip' => 'required|unique:pegawais',
             'nama' => 'required',
@@ -40,17 +91,36 @@ class PegawaiController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('pegawai.index');
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success', 'Data pegawai berhasil ditambahkan');
     }
 
+
+    // =========================
+    // FORM EDIT
+    // =========================
     public function edit($id)
     {
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
         $pegawai = Pegawai::findOrFail($id);
+
         return view('pegawai.edit', compact('pegawai'));
     }
 
+
+    // =========================
+    // UPDATE DATA
+    // =========================
     public function update(Request $request, $id)
     {
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
         $pegawai = Pegawai::findOrFail($id);
 
         $pegawai->update([
@@ -62,12 +132,25 @@ class PegawaiController extends Controller
             'jatah_cuti' => $request->jatah_cuti
         ]);
 
-        return redirect()->route('pegawai.index');
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success', 'Data pegawai berhasil diupdate');
     }
 
+
+    // =========================
+    // HAPUS DATA
+    // =========================
     public function destroy($id)
     {
+        if (session('role') != 'hrd') {
+            abort(403);
+        }
+
         Pegawai::findOrFail($id)->delete();
-        return redirect()->route('pegawai.index');
+
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success', 'Data pegawai berhasil dihapus');
     }
 }

@@ -1,131 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.index')
 
-<head>
+@section('title', 'Login SIPENA')
 
-    <meta charset="UTF-8">
+@section('content')
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<div class="page page-center">
 
-    <title>SIPENA</title>
+    <div class="container container-tight py-4">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+        <div class="text-center mb-4">
 
-    <style>
+            <h1 class="text-primary">
 
-        body{
-            background: linear-gradient(
-                135deg,
-                #0f172a,
-                #1e293b
-            );
+                SIPENA
 
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-        }
+            </h1>
 
-        .login-box{
-            width:380px;
-        }
+            <div class="text-secondary">
 
-        .card{
-            border:none;
-            border-radius:20px;
-            overflow:hidden;
-            box-shadow:0 10px 30px rgba(0,0,0,0.3);
-        }
+                Sistem Informasi Pegawai
 
-        .card-body{
-            padding:40px;
-        }
+            </div>
 
-        .logo{
-            text-align:center;
-            color:white;
-            font-size:45px;
-            font-weight:bold;
-            margin-bottom:25px;
-            letter-spacing:3px;
-        }
+        </div>
 
-        .form-control{
-            height:50px;
-            border-radius:12px;
-        }
 
-        .btn-login{
-            height:50px;
-            border-radius:12px;
-            font-weight:bold;
-            font-size:16px;
-            background:#2563eb;
-            border:none;
-        }
+        <div class="card card-md">
 
-        .btn-login:hover{
-            background:#1d4ed8;
-        }
+            <div class="card-body">
 
-    </style>
-
-</head>
-
-<body>
-
-<div class="login-box">
-
-    <div class="logo">
-        SIPENA
-    </div>
-
-    <div class="card">
-
-        <div class="card-body">
-
-            @if(session('error'))
-
-                <div class="alert alert-danger">
-
-                    {{ session('error') }}
-
-                </div>
-
-            @endif
-
-            <form action="/proses-login"
-                  method="POST">
-
-                @csrf
-
-                <div class="form-group mb-3">
-
-                    <input type="text"
-                           name="username"
-                           class="form-control"
-                           placeholder="Username">
-
-                </div>
-
-                <div class="form-group mb-4">
-
-                    <input type="password"
-                           name="password"
-                           class="form-control"
-                           placeholder="Password">
-
-                </div>
-
-                <button class="btn btn-primary btn-block btn-login">
+                <h2 class="h2 text-center mb-4">
 
                     Login
 
-                </button>
+                </h2>
 
-            </form>
+
+                {{-- ERROR --}}
+                @if(session('error'))
+
+                    <div class="alert alert-danger">
+
+                        {{ session('error') }}
+
+                    </div>
+
+                @endif
+
+
+                <form action="/proses-login"
+                      method="POST">
+
+                    @csrf
+
+                    {{-- USERNAME --}}
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Username
+
+                        </label>
+
+                        <input type="text"
+                               name="username"
+                               class="form-control"
+                               placeholder="Masukkan username">
+
+                    </div>
+
+
+                    {{-- PASSWORD --}}
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Password
+
+                        </label>
+
+                        <input type="password"
+                               name="password"
+                               class="form-control"
+                               placeholder="Masukkan password">
+
+                    </div>
+
+
+                    {{-- BUTTON --}}
+                    <div class="form-footer">
+
+                        <button class="btn btn-primary w-100">
+
+                            Login
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
 
         </div>
 
@@ -133,5 +108,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

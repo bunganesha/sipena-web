@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pengajuan extends Model
 {
+    use HasFactory;
+
     protected $table = 'pengajuans';
 
     protected $primaryKey = 'id';
@@ -16,10 +19,13 @@ class Pengajuan extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'alasan',
+
         'status_spv',
         'catatan_spv',
+
         'status_manager',
         'catatan_manager',
+
         'status_hrd',
         'catatan_hrd',
     ];
@@ -27,6 +33,9 @@ class Pengajuan extends Model
     // RELASI KE PEGAWAI
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class, 'pegawai_id');
+        return $this->belongsTo(
+            Pegawai::class,
+            'pegawai_id'
+        );
     }
 }

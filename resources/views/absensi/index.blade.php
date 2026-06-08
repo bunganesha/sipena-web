@@ -8,6 +8,14 @@
 
 <button class="btn btn-primary"
         data-bs-toggle="modal"
+        data-bs-target="#modalTambah">
+
+    Tambah Absensi
+
+</button>
+
+<button class="btn btn-success"
+        data-bs-toggle="modal"
         data-bs-target="#modalImport">
 
     Import CSV
@@ -18,217 +26,44 @@
 
 @section('content')
 
-{{-- CARD SUMMARY --}}
-<div class="row row-deck row-cards mb-4">
-
-    {{-- HADIR --}}
-    <div class="col-sm-6 col-lg-3">
-
-        <div class="card card-sm">
-
-            <div class="card-body">
-
-                <div class="row align-items-center">
-
-                    <div class="col-auto">
-
-                        <span class="bg-success text-white avatar">
-
-                            ✔
-
-                        </span>
-
-                    </div>
-
-                    <div class="col">
-
-                        <div class="font-weight-medium">
-                            Hadir
-                        </div>
-
-                        <div class="text-secondary">
-                            Pegawai hadir hari ini
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="h1 mt-3 mb-0 text-success">
-                    98
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    {{-- CUTI --}}
-    <div class="col-sm-6 col-lg-3">
-
-        <div class="card card-sm">
-
-            <div class="card-body">
-
-                <div class="row align-items-center">
-
-                    <div class="col-auto">
-
-                        <span class="bg-warning text-white avatar">
-
-                            📄
-
-                        </span>
-
-                    </div>
-
-                    <div class="col">
-
-                        <div class="font-weight-medium">
-                            Cuti
-                        </div>
-
-                        <div class="text-secondary">
-                            Pegawai cuti
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="h1 mt-3 mb-0 text-warning">
-                    12
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    {{-- IZIN --}}
-    <div class="col-sm-6 col-lg-3">
-
-        <div class="card card-sm">
-
-            <div class="card-body">
-
-                <div class="row align-items-center">
-
-                    <div class="col-auto">
-
-                        <span class="bg-primary text-white avatar">
-
-                            📨
-
-                        </span>
-
-                    </div>
-
-                    <div class="col">
-
-                        <div class="font-weight-medium">
-                            Izin
-                        </div>
-
-                        <div class="text-secondary">
-                            Pegawai izin
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="h1 mt-3 mb-0 text-primary">
-                    5
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    {{-- ALFA --}}
-    <div class="col-sm-6 col-lg-3">
-
-        <div class="card card-sm">
-
-            <div class="card-body">
-
-                <div class="row align-items-center">
-
-                    <div class="col-auto">
-
-                        <span class="bg-danger text-white avatar">
-
-                            ✖
-
-                        </span>
-
-                    </div>
-
-                    <div class="col">
-
-                        <div class="font-weight-medium">
-                            Alfa
-                        </div>
-
-                        <div class="text-secondary">
-                            Tidak hadir tanpa keterangan
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="h1 mt-3 mb-0 text-danger">
-                    3
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- TABLE ABSENSI --}}
 <div class="card">
 
+    {{-- HEADER --}}
     <div class="card-body border-bottom py-3">
 
-        <div class="d-flex align-items-center">
+        <form action="/absensi"
+              method="GET">
 
-            <div class="text-secondary">
+            <div class="d-flex align-items-center">
 
-                Rekap absensi pegawai
+                <div class="text-secondary">
 
-            </div>
+                    Kelola data absensi pegawai
 
-            <div class="ms-auto text-secondary">
+                </div>
 
-                <div class="input-icon">
+                <div class="ms-auto text-secondary">
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Search absensi...">
+                    <div class="input-icon">
+
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Search absensi..."
+                               value="{{ request('search') }}">
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
 
 
+    {{-- TABLE --}}
     <div class="table-responsive">
 
         <table class="table table-vcenter card-table">
@@ -238,18 +73,13 @@
                 <tr>
 
                     <th>NIP</th>
-
-                    <th>Nama Pegawai</th>
-
+                    <th>Nama</th>
                     <th>Tanggal</th>
-
                     <th>Jam Masuk</th>
-
                     <th>Jam Keluar</th>
-
                     <th>Status</th>
-
                     <th>Keterangan</th>
+                    <th class="w-1">Aksi</th>
 
                 </tr>
 
@@ -257,250 +87,101 @@
 
             <tbody>
 
-                {{-- DATA SAMPLE --}}
+                @forelse($absensis as $item)
+
                 <tr>
 
                     <td>
 
-                        23001
+                        {{ $item->pegawai->nip ?? '-' }}
 
                     </td>
 
-
                     <td>
 
-                        <div class="d-flex py-1 align-items-center">
-
-                            <span class="avatar me-2 bg-primary text-white">
-
-                                B
-
-                            </span>
-
-                            <div class="flex-fill">
-
-                                <div class="font-weight-medium">
-
-                                    Budi Santoso
-
-                                </div>
-
-                                <div class="text-secondary">
-
-                                    Divisi IT
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                        {{ $item->pegawai->nama ?? '-' }}
 
                     </td>
 
-
                     <td>
 
-                        20 Mei 2026
+                        {{ $item->tanggal }}
 
                     </td>
 
-
                     <td>
 
-                        08:00
+                        {{ $item->jam_masuk }}
 
                     </td>
 
-
                     <td>
 
-                        17:00
+                        {{ $item->jam_keluar }}
 
                     </td>
 
-
                     <td>
 
-                        <span class="badge bg-success-lt">
+                        <span class="badge bg-primary-lt">
 
-                            Hadir
+                            {{ ucfirst($item->status_absensi) }}
 
                         </span>
 
                     </td>
 
-
                     <td>
 
-                        Fingerprint valid
+                        {{ $item->keterangan }}
 
                     </td>
 
-                </tr>
-
-
-                {{-- DATA SAMPLE --}}
-                <tr>
-
                     <td>
 
-                        23002
+                        <div class="btn-list flex-nowrap">
 
-                    </td>
+                            <a href="/absensi/{{ $item->id }}/edit"
+                               class="btn btn-warning btn-sm">
 
+                                Edit
 
-                    <td>
+                            </a>
 
-                        <div class="d-flex py-1 align-items-center">
+                            <form action="/absensi/{{ $item->id }}"
+                                  method="POST">
 
-                            <span class="avatar me-2 bg-warning text-white">
+                                @csrf
+                                @method('DELETE')
 
-                                S
+                                <button class="btn btn-danger btn-sm">
 
-                            </span>
+                                    Hapus
 
-                            <div class="flex-fill">
+                                </button>
 
-                                <div class="font-weight-medium">
-
-                                    Siti Aisyah
-
-                                </div>
-
-                                <div class="text-secondary">
-
-                                    Divisi HRD
-
-                                </div>
-
-                            </div>
+                            </form>
 
                         </div>
 
                     </td>
 
-
-                    <td>
-
-                        20 Mei 2026
-
-                    </td>
-
-
-                    <td>
-
-                        -
-
-                    </td>
-
-
-                    <td>
-
-                        -
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-warning-lt">
-
-                            Cuti
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        Pengajuan cuti approved
-
-                    </td>
-
                 </tr>
 
+                @empty
 
-                {{-- DATA SAMPLE --}}
                 <tr>
 
-                    <td>
+                    <td colspan="8"
+                        class="text-center">
 
-                        23003
-
-                    </td>
-
-
-                    <td>
-
-                        <div class="d-flex py-1 align-items-center">
-
-                            <span class="avatar me-2 bg-danger text-white">
-
-                                A
-
-                            </span>
-
-                            <div class="flex-fill">
-
-                                <div class="font-weight-medium">
-
-                                    Andi Saputra
-
-                                </div>
-
-                                <div class="text-secondary">
-
-                                    Divisi Finance
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-
-                        20 Mei 2026
-
-                    </td>
-
-
-                    <td>
-
-                        -
-
-                    </td>
-
-
-                    <td>
-
-                        -
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-danger-lt">
-
-                            Alfa
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        Tidak ada fingerprint & pengajuan
+                        Data absensi kosong
 
                     </td>
 
                 </tr>
+
+                @endforelse
 
             </tbody>
 
@@ -511,27 +192,25 @@
 </div>
 
 
-{{-- MODAL IMPORT CSV --}}
+{{-- MODAL TAMBAH --}}
 <div class="modal modal-blur fade"
-     id="modalImport"
+     id="modalTambah"
      tabindex="-1">
 
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
         <div class="modal-content">
 
-            <form action="#"
-                  method="POST"
-                  enctype="multipart/form-data">
+            <form action="/absensi"
+                  method="POST">
 
                 @csrf
 
-                {{-- HEADER --}}
                 <div class="modal-header">
 
                     <h5 class="modal-title">
 
-                        Import Absensi CSV
+                        Tambah Absensi
 
                     </h5>
 
@@ -544,34 +223,136 @@
                 </div>
 
 
-                {{-- BODY --}}
                 <div class="modal-body">
 
-                    <div class="mb-3">
+                    <div class="row">
 
-                        <label class="form-label">
+                        <div class="col-md-6 mb-3">
 
-                            Upload File CSV
+                            <label class="form-label">
 
-                        </label>
+                                Pegawai
 
-                        <input type="file"
-                               name="file_csv"
-                               class="form-control"
-                               accept=".csv">
+                            </label>
 
-                    </div>
+                            <select name="pegawai_id"
+                                    class="form-select">
 
-                    <div class="alert alert-info">
+                                @foreach($pegawais as $pegawai)
 
-                        Format file harus berupa CSV sesuai data fingerprint.
+                                <option value="{{ $pegawai->id }}">
+
+                                    {{ $pegawai->nama }}
+
+                                </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Tanggal
+
+                            </label>
+
+                            <input type="date"
+                                   name="tanggal"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Jam Masuk
+
+                            </label>
+
+                            <input type="time"
+                                   name="jam_masuk"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Jam Keluar
+
+                            </label>
+
+                            <input type="time"
+                                   name="jam_keluar"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Status
+
+                            </label>
+
+                            <select name="status_absensi"
+                                    class="form-select">
+
+                                <option value="hadir">
+                                    Hadir
+                                </option>
+
+                                <option value="izin">
+                                    Izin
+                                </option>
+
+                                <option value="sakit">
+                                    Sakit
+                                </option>
+
+                                <option value="cuti">
+                                    Cuti
+                                </option>
+
+                                <option value="alpha">
+                                    Alpha
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Keterangan
+
+                            </label>
+
+                            <input type="text"
+                                   name="keterangan"
+                                   class="form-control">
+
+                        </div>
 
                     </div>
 
                 </div>
 
 
-                {{-- FOOTER --}}
                 <div class="modal-footer">
 
                     <button type="button"
@@ -584,7 +365,75 @@
 
                     <button class="btn btn-primary">
 
-                        Import Data
+                        Simpan
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- MODAL IMPORT --}}
+<div class="modal modal-blur fade"
+     id="modalImport"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form action="{{ route('absensi.import') }}"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                @csrf
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Import CSV / Excel
+
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+                    <input type="file"
+                           name="file"
+                           class="form-control">
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn me-auto"
+                            data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button class="btn btn-success">
+
+                        Import
 
                     </button>
 

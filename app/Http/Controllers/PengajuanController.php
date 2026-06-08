@@ -8,25 +8,60 @@ use Illuminate\Http\Request;
 
 class PengajuanController extends Controller
 {
-    public function index()
+    // =========================
+    // TAMPIL DATA PENGAJUAN
+    // =========================
+    public function index(Request $request)
     {
-        $pengajuans = Pengajuan::with('pegawai')->latest()->get();
-        $pegawais = Pegawai::all(); 
+        // ROLE PERMISSION
+        if (
+            session('role') != 'pegawai' &&
+            session('role') != 'hrd'
+        ) {
+            abort(403);
+        }
 
-        return view('pengajuan.index', compact('pengajuans', 'pegawais'));
+        // SEARCH
+        $search = $request->search;
+
+        $pengajuans = Pengajuan::with('pegawai')
+            ->when($search, function ($query) use ($search) {
+
+                $query->where('jenis_pengajuan', 'like', "%{$search}%")
+                    ->orWhereHas('pegawai', function ($q) use ($search) {
+
+                        $q->where('nama', 'like', "%{$search}%")
+                          ->orWhere('nip', 'like', "%{$search}%");
+
+                    });
+
+            })
+            ->latest()
+            ->get();
+
+        $pegawais = Pegawai::all();
+
+        return view('pengajuan.index', compact(
+            'pengajuans',
+            'pegawais'
+        ));
     }
 
-    public function create()
-    {
-        $pegawais = Pegawai::all(); // INI YANG KAMU LUPA
 
-        return view('pengajuan.create', compact('pegawais'));
-    }
-
+    // =========================
+    // SIMPAN DATA
+    // =========================
     public function store(Request $request)
     {
+        if (
+            session('role') != 'pegawai' &&
+            session('role') != 'hrd'
+        ) {
+            abort(403);
+        }
+
         $request->validate([
-            'pegawai_id' => 'required|exists:pegawais,id',
+            'pegawai_id' => 'required',
             'jenis_pengajuan' => 'required',
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
@@ -35,42 +70,65 @@ class PengajuanController extends Controller
 
         Pengajuan::create([
             'pegawai_id' => $request->pegawai_id,
-            'jenis_pengajuan' => $request->jenis_pengajuan,
+            'jenis_pengajuan' => strtolower($request->jenis_pengajuan),
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'alasan' => $request->alasan,
+            'status_spv' => 'process',
+            'status_manager' => 'process',
+            'status_hrd' => 'process',
         ]);
 
-        return redirect()->route('pengajuan.index');
+        return redirect()
+            ->route('pengajuan.index')
+            ->with('success', 'Pengajuan berhasil ditambahkan');
     }
 
-    public function edit($id)
-    {
-        $pengajuan = Pengajuan::findOrFail($id);
-        $pegawais = Pegawai::all();
 
-        return view('pengajuan.edit', compact('pengajuan', 'pegawais'));
-    }
-
+    // =========================
+    // UPDATE DATA
+    // =========================
     public function update(Request $request, $id)
     {
+        if (
+            session('role') != 'pegawai' &&
+            session('role') != 'hrd'
+        ) {
+            abort(403);
+        }
+
         $pengajuan = Pengajuan::findOrFail($id);
 
         $pengajuan->update([
             'pegawai_id' => $request->pegawai_id,
-            'jenis_pengajuan' => $request->jenis_pengajuan,
+            'jenis_pengajuan' => strtolower($request->jenis_pengajuan),
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'alasan' => $request->alasan,
         ]);
 
-        return redirect()->route('pengajuan.index');
+        return redirect()
+            ->route('pengajuan.index')
+            ->with('success', 'Pengajuan berhasil diupdate');
     }
 
+
+    // =========================
+    // HAPUS DATA
+    // =========================
     public function destroy($id)
     {
+        if (
+            session('role') != 'pegawai' &&
+            session('role') != 'hrd'
+        ) {
+            abort(403);
+        }
+
         Pengajuan::findOrFail($id)->delete();
 
-        return redirect()->route('pengajuan.index');
+        return redirect()
+            ->route('pengajuan.index')
+            ->with('success', 'Pengajuan berhasil dihapus');
     }
 }

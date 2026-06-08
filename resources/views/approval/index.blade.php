@@ -11,27 +11,34 @@
     {{-- HEADER --}}
     <div class="card-body border-bottom py-3">
 
-        <div class="d-flex align-items-center">
+        <form action="/approval"
+              method="GET">
 
-            <div class="text-secondary">
+            <div class="d-flex align-items-center">
 
-                Kelola approval pengajuan cuti, izin, dan sakit pegawai
+                <div class="text-secondary">
 
-            </div>
+                    Kelola approval pengajuan cuti, izin, dan sakit pegawai
 
-            <div class="ms-auto text-secondary">
+                </div>
 
-                <div class="input-icon">
+                <div class="ms-auto text-secondary">
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Search approval...">
+                    <div class="input-icon">
+
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Search approval..."
+                               value="{{ request('search') }}">
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
 
@@ -46,23 +53,13 @@
                 <tr>
 
                     <th>ID</th>
-
                     <th>Pegawai</th>
-
                     <th>Jenis</th>
-
                     <th>Tanggal</th>
-
-                    <th>Durasi</th>
-
                     <th>SPV</th>
-
                     <th>Manager</th>
-
                     <th>HRD</th>
-
                     <th>Status Final</th>
-
                     <th class="w-1">
                         Aksi
                     </th>
@@ -73,12 +70,13 @@
 
             <tbody>
 
-                {{-- DATA SAMPLE 1 --}}
+                @forelse($pengajuans as $item)
+
                 <tr>
 
                     <td>
 
-                        APR001
+                        APR00{{ $item->id }}
 
                     </td>
 
@@ -90,7 +88,7 @@
 
                             <span class="avatar me-2 bg-primary text-white">
 
-                                B
+                                {{ strtoupper(substr($item->pegawai->nama ?? 'P',0,1)) }}
 
                             </span>
 
@@ -98,13 +96,13 @@
 
                                 <div class="font-weight-medium">
 
-                                    Budi Santoso
+                                    {{ $item->pegawai->nama ?? '-' }}
 
                                 </div>
 
                                 <div class="text-secondary">
 
-                                    Divisi IT
+                                    Divisi {{ $item->pegawai->divisi ?? '-' }}
 
                                 </div>
 
@@ -118,9 +116,9 @@
                     {{-- JENIS --}}
                     <td>
 
-                        <span class="badge bg-warning-lt">
+                       <span class="badge bg-warning-lt text-warning">
 
-                            Cuti
+                            {{ ucfirst($item->jenis_pengajuan) }}
 
                         </span>
 
@@ -130,15 +128,7 @@
                     {{-- TANGGAL --}}
                     <td>
 
-                        20 Mei 2026
-
-                    </td>
-
-
-                    {{-- DURASI --}}
-                    <td>
-
-                        2 Hari
+                        {{ $item->tanggal_mulai }}
 
                     </td>
 
@@ -146,11 +136,25 @@
                     {{-- SPV --}}
                     <td>
 
-                        <span class="badge bg-success-lt">
+                        @if($item->status_spv == 'approved')
 
-                            Approved
+                            <span class="badge bg-success-lt">
+                                Approved
+                            </span>
 
-                        </span>
+                        @elseif($item->status_spv == 'rejected')
+
+                            <span class="badge bg-danger-lt">
+                                Rejected
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-yellow-lt">
+                                Process
+                            </span>
+
+                        @endif
 
                     </td>
 
@@ -158,11 +162,25 @@
                     {{-- MANAGER --}}
                     <td>
 
-                        <span class="badge bg-yellow-lt">
+                        @if($item->status_manager == 'approved')
 
-                            Pending
+                            <span class="badge bg-success-lt">
+                                Approved
+                            </span>
 
-                        </span>
+                        @elseif($item->status_manager == 'rejected')
+
+                            <span class="badge bg-danger-lt">
+                                Rejected
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-yellow-lt">
+                                Process
+                            </span>
+
+                        @endif
 
                     </td>
 
@@ -170,11 +188,25 @@
                     {{-- HRD --}}
                     <td>
 
-                        <span class="badge bg-secondary-lt">
+                        @if($item->status_hrd == 'approved')
 
-                            Waiting
+                            <span class="badge bg-success-lt">
+                                Approved
+                            </span>
 
-                        </span>
+                        @elseif($item->status_hrd == 'rejected')
+
+                            <span class="badge bg-danger-lt">
+                                Rejected
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-secondary-lt">
+                                Waiting
+                            </span>
+
+                        @endif
 
                     </td>
 
@@ -182,11 +214,33 @@
                     {{-- STATUS FINAL --}}
                     <td>
 
-                        <span class="badge bg-yellow text-white">
+                        @if(
+                            $item->status_spv == 'approved' &&
+                            $item->status_manager == 'approved' &&
+                            $item->status_hrd == 'approved'
+                        )
 
-                            Process
+                            <span class="badge bg-success text-white">
+                                Approved
+                            </span>
 
-                        </span>
+                        @elseif(
+                            $item->status_spv == 'rejected' ||
+                            $item->status_manager == 'rejected' ||
+                            $item->status_hrd == 'rejected'
+                        )
+
+                            <span class="badge bg-danger text-white">
+                                Rejected
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-yellow text-white">
+                                Process
+                            </span>
+
+                        @endif
 
                     </td>
 
@@ -196,21 +250,44 @@
 
                         <div class="btn-list flex-nowrap">
 
-                            <button class="btn btn-success btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalApprove">
+                            {{-- APPROVE --}}
+                            <form action="/approval/{{ $item->id }}"
+                                  method="POST">
 
-                                Approve
+                                @csrf
+                                @method('PUT')
 
-                            </button>
+                                <input type="hidden"
+                                       name="status"
+                                       value="Approved">
 
-                            <button class="btn btn-danger btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalReject">
+                                <button class="btn btn-success btn-sm">
 
-                                Reject
+                                    Approve
 
-                            </button>
+                                </button>
+
+                            </form>
+
+
+                            {{-- REJECT --}}
+                            <form action="/approval/{{ $item->id }}"
+                                  method="POST">
+
+                                @csrf
+                                @method('PUT')
+
+                                <input type="hidden"
+                                       name="status"
+                                       value="Rejected">
+
+                                <button class="btn btn-danger btn-sm">
+
+                                    Reject
+
+                                </button>
+
+                            </form>
 
                         </div>
 
@@ -218,287 +295,24 @@
 
                 </tr>
 
+                @empty
 
-                {{-- DATA SAMPLE 2 --}}
                 <tr>
 
-                    <td>
+                    <td colspan="9"
+                        class="text-center">
 
-                        APR002
-
-                    </td>
-
-
-                    <td>
-
-                        <div class="d-flex py-1 align-items-center">
-
-                            <span class="avatar me-2 bg-success text-white">
-
-                                S
-
-                            </span>
-
-                            <div class="flex-fill">
-
-                                <div class="font-weight-medium">
-
-                                    Siti Aisyah
-
-                                </div>
-
-                                <div class="text-secondary">
-
-                                    Divisi HRD
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-danger-lt">
-
-                            Sakit
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        18 Mei 2026
-
-                    </td>
-
-
-                    <td>
-
-                        1 Hari
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-success-lt">
-
-                            Approved
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-success-lt">
-
-                            Approved
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-success-lt">
-
-                            Approved
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="badge bg-success text-white">
-
-                            Approved
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <a href="#"
-                           class="btn btn-info btn-sm">
-
-                            Detail
-
-                        </a>
+                        Data pengajuan kosong
 
                     </td>
 
                 </tr>
+
+                @endforelse
 
             </tbody>
 
         </table>
-
-    </div>
-
-</div>
-
-
-{{-- MODAL APPROVE --}}
-<div class="modal modal-blur fade"
-     id="modalApprove"
-     tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <form action="#"
-                  method="POST">
-
-                @csrf
-
-                <div class="modal-header">
-
-                    <h5 class="modal-title">
-
-                        Approve Pengajuan
-
-                    </h5>
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-
-                    </button>
-
-                </div>
-
-
-                <div class="modal-body">
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Catatan Approval
-
-                        </label>
-
-                        <textarea class="form-control"
-                                  rows="4"
-                                  placeholder="Masukkan catatan approval (opsional)..."></textarea>
-
-                    </div>
-
-                </div>
-
-
-                <div class="modal-footer">
-
-                    <button type="button"
-                            class="btn me-auto"
-                            data-bs-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button class="btn btn-success">
-
-                        Approve Pengajuan
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- MODAL REJECT --}}
-<div class="modal modal-blur fade"
-     id="modalReject"
-     tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <form action="#"
-                  method="POST">
-
-                @csrf
-
-                <div class="modal-header">
-
-                    <h5 class="modal-title">
-
-                        Reject Pengajuan
-
-                    </h5>
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-
-                    </button>
-
-                </div>
-
-
-                <div class="modal-body">
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Alasan Reject
-
-                        </label>
-
-                        <textarea class="form-control"
-                                  rows="4"
-                                  placeholder="Masukkan alasan penolakan..."></textarea>
-
-                    </div>
-
-                </div>
-
-
-                <div class="modal-footer">
-
-                    <button type="button"
-                            class="btn me-auto"
-                            data-bs-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button class="btn btn-danger">
-
-                        Reject Pengajuan
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
 
     </div>
 
