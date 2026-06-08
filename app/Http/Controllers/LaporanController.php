@@ -9,6 +9,7 @@ use App\Exports\LaporanExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+
 class LaporanController extends Controller
 {
     // =========================
@@ -112,16 +113,11 @@ class LaporanController extends Controller
     // EXPORT PDF
     // =========================
     public function exportPdf()
-    {
-        $absensis = Absensi::with('pegawai')->get();
+{
+    $laporan = Absensi::all();
 
-        $pdf = Pdf::loadView(
-            'laporan.pdf',
-            compact('absensis')
-        );
+    $pdf = Pdf::loadView('laporan.pdf', compact('laporan'));
 
-        return $pdf->download(
-            'laporan-absensi.pdf'
-        );
-    }
+    return $pdf->download('laporan-absensi.pdf');
+}
 }
