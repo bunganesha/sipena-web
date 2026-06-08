@@ -25,8 +25,7 @@ class AbsensiController extends Controller
                     function ($q) use ($search) {
 
                     $q->where('nama', 'like', "%{$search}%")
-                      ->orWhere('nip', 'like', "%{$search}%");
-
+                        ->orWhere('nip', 'like', "%{$search}%");
                 });
 
             })
@@ -117,10 +116,6 @@ class AbsensiController extends Controller
         return redirect('/absensi');
     }
 
-
-    // =========================
-    // IMPORT CSV / EXCEL
-    // =========================
     public function import(Request $request)
     {
         $request->validate([
@@ -132,6 +127,17 @@ class AbsensiController extends Controller
             $request->file('file')
         );
 
-        return redirect('/absensi');
+        return redirect('/absensi')
+            ->with('success', 'Data absensi berhasil diimport');
+    }
+
+    public function absensiSaya()
+    {
+        $user = auth()->user();
+
+        $data = \App\Models\Absensi::where('username', $user->username)
+            ->get();
+
+        return view('absensi.saya', compact('data'));
     }
 }

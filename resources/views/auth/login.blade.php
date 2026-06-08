@@ -1,8 +1,14 @@
-@extends('layouts.index')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login SIPENA</title>
 
-@section('title', 'Login SIPENA')
+    <link href="{{ asset('assets/css/tabler.min.css') }}" rel="stylesheet">
+</head>
 
-@section('content')
+<body class="d-flex flex-column">
 
 <div class="page page-center">
 
@@ -10,102 +16,95 @@
 
         <div class="text-center mb-4">
 
-            <h1 class="text-primary">
-
+            <h1 class="text-primary fw-bold">
                 SIPENA
-
             </h1>
 
             <div class="text-secondary">
-
-                Sistem Informasi Pegawai
-
+                Sistem Informasi Pengelolaan Absensi dan Cuti Pegawai
             </div>
 
         </div>
 
-
-        <div class="card card-md">
+        <div class="card card-md shadow-sm">
 
             <div class="card-body">
 
-                <h2 class="h2 text-center mb-4">
-
+                <h2 class="card-title text-center mb-4">
                     Login
-
                 </h2>
 
-
-                {{-- ERROR --}}
                 @if(session('error'))
-
                     <div class="alert alert-danger">
-
                         {{ session('error') }}
-
                     </div>
-
                 @endif
 
-
-                <form action="/proses-login"
-                      method="POST">
+                <form action="{{ route('login') }}" method="POST">
 
                     @csrf
+                    @csrf
 
-                    {{-- USERNAME --}}
                     <div class="mb-3">
 
                         <label class="form-label">
-
                             Username
-
                         </label>
 
                         <input type="text"
-                               name="username"
-                               class="form-control"
-                               placeholder="Masukkan username">
+                            name="username"
+                            class="form-control"
+                            placeholder="Masukkan username"
+                            required>
 
                     </div>
+                    </div>
 
-
-                    {{-- PASSWORD --}}
                     <div class="mb-3">
 
                         <label class="form-label">
-
                             Password
-
                         </label>
 
                         <input type="password"
-                               name="password"
-                               class="form-control"
-                               placeholder="Masukkan password">
+                            name="password"
+                            class="form-control"
+                            placeholder="Masukkan password"
+                            required>
 
                     </div>
+                    </div>
 
-
-                    {{-- BUTTON --}}
                     <div class="form-footer">
 
-                        <button class="btn btn-primary w-100">
+                        <button type="submit"
+                            class="btn btn-primary w-100">
 
                             Login
+                            Login
 
+                        </button>
                         </button>
 
                     </div>
 
                 </form>
+                    </div>
 
+                </form>
+
+            </div>
             </div>
 
         </div>
+        </div>
 
+    </div>
     </div>
 
 </div>
 
-@endsection
+<script src="{{ asset('assets/js/tabler.min.js') }}"></script>
+
+</body>
+</html>

@@ -3,7 +3,10 @@
     <div class="container-xl">
 
         {{-- MOBILE TOGGLE --}}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+        <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbar-menu">
 
             <span class="navbar-toggler-icon"></span>
 
@@ -13,7 +16,8 @@
         {{-- BRAND --}}
         <h1 class="navbar-brand navbar-brand-autodark pe-0 pe-md-4">
 
-            <a href="/dashboard" class="text-decoration-none d-flex align-items-center">
+            <a href="/dashboard"
+                class="text-decoration-none d-flex align-items-center">
 
                 <span class="avatar avatar-sm bg-primary text-white me-2">
                     S
@@ -39,10 +43,46 @@
         {{-- RIGHT MENU --}}
         <div class="navbar-nav flex-row order-md-last">
 
+            {{-- NOTIFICATION --}}
+            <div class="nav-item dropdown d-none d-md-flex me-3">
+
+                <a href="#"
+                    class="nav-link px-0"
+                    data-bs-toggle="dropdown"
+                    tabindex="-1"
+                    aria-label="Show notifications">
+
+                    <span class="badge bg-red"></span>
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="icon"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none" />
+
+                        <path d="M10 5a2 2 0 1 1 4 0c0 .628 .134 1.197 .374 1.688l.707 1.414a2 2 0 0 0 .895 .895l1.414 .707c.491 .24 1.06 .374 1.688 .374a2 2 0 1 1 0 4c-.628 0-1.197 .134-1.688 .374l-1.414 .707a2 2 0 0 0-.895 .895l-.707 1.414c-.24 .491-.374 1.06-.374 1.688a2 2 0 1 1 -4 0c0-.628-.134-1.197-.374-1.688l-.707-1.414a2 2 0 0 0-.895-.895l-1.414-.707c-.491-.24-1.06-.374-1.688-.374a2 2 0 1 1 0-4c.628 0 1.197-.134 1.688-.374l1.414-.707a2 2 0 0 0 .895-.895l.707-1.414c.24-.491 .374-1.06 .374-1.688" />
+
+                    </svg>
+
+                </a>
+
+            </div>
+
             {{-- PROFILE --}}
             <div class="nav-item dropdown">
 
-                <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                <a href="#"
+                    class="nav-link d-flex lh-1 text-reset p-0"
+                    data-bs-toggle="dropdown">
 
                     <span class="avatar avatar-sm bg-primary text-white">
 
@@ -68,138 +108,194 @@
                 {{-- DROPDOWN --}}
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
 
-                    <a href="/logout" class="dropdown-item text-danger">
+                    <a href="#"
+                        class="dropdown-item">
 
-                        Logout
+                        Profile
 
                     </a>
 
+                    <a href="#"
+                        class="dropdown-item">
+
+                        Settings
+
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    {{-- LOGOUT --}}
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+
+                        <button type="submit"
+                            class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
+
+                            Logout
+
+                        </button>
+                    </form>
                 </div>
-
             </div>
-
         </div>
-
-
         {{-- NAVIGATION MENU --}}
-        <div class="collapse navbar-collapse" id="navbar-menu">
-
+        <div class="collapse navbar-collapse"
+            id="navbar-menu">
             <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-
                 <ul class="navbar-nav">
-
                     {{-- DASHBOARD --}}
                     <li class="nav-item">
-
-                        <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="/dashboard">
-
+                        <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}"
+                            href="/dashboard">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 📊
                             </span>
-
                             <span class="nav-link-title">
                                 Dashboard
+                            </span>
+                        </a>
+                    </li>
+                    {{-- MASTER DATA --}}
+                    @if (session('role') == 'hrd')
+
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="masterDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                👨‍💼
+                            </span>
+
+                            <span class="nav-link-title">
+                                Master Data
                             </span>
 
                         </a>
 
+                        <ul class="dropdown-menu"
+                            aria-labelledby="masterDropdown">
+
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/pegawai">
+
+                                    Data Pegawai
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/user">
+
+                                    Data User
+
+                                </a>
+                            </li>
+
+                        </ul>
+
                     </li>
 
+                    @endif
+                    {{-- TRANSAKSI --}}
+                    <li class="nav-item dropdown">
 
-                    {{-- HRD --}}
-                    @if (session('role') == 'hrd')
-                        {{-- MASTER DATA --}}
-                        <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="transaksiDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
 
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                📅
+                            </span>
 
-                                Master Data
-
-                            </a>
-
-                            <ul class="dropdown-menu">
-
-                                <li>
-
-                                    <a class="dropdown-item" href="/pegawai">
-
-                                        Data Pegawai
-
-                                    </a>
-
-                                </li>
-
-                                <li>
-
-                                    <a class="dropdown-item" href="/user">
-
-                                        Data User
-
-                                    </a>
-
-                                </li>
-
-                            </ul>
-
-                        </li>
-
-
-                        {{-- TRANSAKSI --}}
-                        <li class="nav-item dropdown">
-
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-
+                            <span class="nav-link-title">
                                 Transaksi
 
                             </a>
 
-                            <ul class="dropdown-menu">
+                        <ul class="dropdown-menu"
+                            aria-labelledby="transaksiDropdown">
 
-                                <li>
+                            {{-- HRD --}}
+                            @if (session('role') == 'hrd')
 
-                                    <a class="dropdown-item" href="/absensi">
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/absensi">
 
-                                        Data Absensi
+                                    Data Absensi
 
-                                    </a>
+                                </a>
+                            </li>
 
-                                </li>
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/approval">
 
-                                <li>
+                                    Approval
 
-                                    <a class="dropdown-item" href="/pengajuan">
+                                </a>
+                            </li>
 
-                                        Pengajuan
+                            @endif
 
-                                    </a>
+                            @if (session('role') == 'pegawai')
 
-                                </li>
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/pengajuan">
 
-                                <li>
+                                    Pengajuan
 
-                                    <a class="dropdown-item" href="/approval">
+                                </a>
+                            </li>
 
-                                        Approval
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/absensi-saya">
 
-                                    </a>
+                                    Absensi Saya
 
-                                </li>
+                                </a>
+                            </li>
 
-                            </ul>
+                            @endif
 
-                        </li>
+                            {{-- MANAGER & SPV --}}
+                            @if (session('role') == 'manager' || session('role') == 'spv')
 
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/approval">
 
-                        {{-- LAPORAN --}}
-                        <li class="nav-item">
+                                    Approval
 
-                            <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan">
+                                </a>
+                            </li>
 
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    📄
-                                </span>
+                            @endif
+
+                        </ul>
+
+                    </li>
+
+                    {{-- LAPORAN --}}
+                    @if (session('role') == 'hrd')
+                    <li class="nav-item">
+
+                        <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}"
+                            href="/laporan">
+
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                📄
+                            </span>
 
                                 <span class="nav-link-title">
                                     Laporan
@@ -207,47 +303,7 @@
 
                             </a>
 
-                        </li>
-                    @endif
-
-
-                    {{-- PEGAWAI --}}
-                    @if (session('role') == 'pegawai')
-                        <li class="nav-item">
-
-                            <a class="nav-link {{ request()->is('pengajuan') ? 'active' : '' }}" href="/pengajuan">
-
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    📨
-                                </span>
-
-                                <span class="nav-link-title">
-                                    Pengajuan
-                                </span>
-
-                            </a>
-
-                        </li>
-                    @endif
-
-
-                    {{-- SPV & MANAGER --}}
-                    @if (session('role') == 'spv' || session('role') == 'manager')
-                        <li class="nav-item">
-
-                            <a class="nav-link {{ request()->is('approval') ? 'active' : '' }}" href="/approval">
-
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    ✅
-                                </span>
-
-                                <span class="nav-link-title">
-                                    Approval
-                                </span>
-
-                            </a>
-
-                        </li>
+                    </li>
                     @endif
 
                 </ul>
@@ -259,3 +315,6 @@
     </div>
 
 </header>
+
+{{-- BOOTSTRAP JS --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -3,61 +3,62 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // =========================
-    // HALAMAN LOGIN
-    // =========================
-    public function login()
+    public function index()
     {
         return view('auth.login');
     }
 
-
-    // =========================
-    // PROSES LOGIN
-    // =========================
-    public function prosesLogin(Request $request)
+    public function authenticate(Request $request)
     {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+        $credentials = $request->validate([
+            'username' => ['required'],
+            'password' => ['required'],
         ]);
 
-        $user = DB::table('users')
-            ->where('username', $request->username)
-            ->first();
+        if (Auth::attempt($credentials)) {
 
-        // LOGIN BERHASIL
-        if ($user && $request->password == $user->password) {
-
+            $request->session()->regenerate();
             session([
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'role' => strtolower($user->role)
+                'username' => Auth::user()->username,
+                'role' => Auth::user()->role,
             ]);
 
-            return redirect('/dashboard');
+            if (Auth::user()->role == 'hrd') {
+                return redirect('/dashboard/hrd')
+                    ->with('success', 'Login HRD berhasil');
+            }
+
+            if (Auth::user()->role == 'manager') {
+                return redirect('/dashboard/manager')
+                    ->with('success', 'Login Manager berhasil');
+            }
+
+            if (Auth::user()->role == 'spv') {
+                return redirect('/dashboard/spv')
+                    ->with('success', 'Login SPV berhasil');
+            }
+
+            if (Auth::user()->role == 'pegawai') {
+                return redirect('/dashboard/pegawai')
+                    ->with('success', 'Login Pegawai berhasil');
+            }
         }
 
-        // LOGIN GAGAL
-        return back()->with(
-            'error',
-            'Username atau password salah'
-        );
+        return back()->with('error', 'Username atau password salah');
     }
 
-
-    // =========================
-    // LOGOUT
-    // =========================
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->flush();
+        Auth::logout();
 
-        return redirect('/');
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 }
