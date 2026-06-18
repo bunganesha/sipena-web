@@ -7,8 +7,6 @@
 @section('content')
 
 <div class="card">
-<div class="card">
-
     {{-- HEADER --}}
     <div class="card-body border-bottom py-3">
 
@@ -25,12 +23,10 @@
                 <form method="GET" action="/approval">
 
                     <div class="input-icon">
-                    <div class="input-icon">
 
                         <input type="text" name="search" class="form-control" placeholder="Search approval..."
                             value="{{ request('search') }}">
 
-                    </div>
                     </div>
 
                 </form>
@@ -44,16 +40,12 @@
 
     {{-- TABLE --}}
     <div class="table-responsive">
-    {{-- TABLE --}}
-    <div class="table-responsive">
 
-        <table class="table table-vcenter card-table">
         <table class="table table-vcenter card-table">
 
             <thead>
-            <thead>
 
-                <tr>
+    
                 <tr>
 
                     <th>ID</th>
@@ -81,12 +73,10 @@
                     </th>
 
                 </tr>
-                </tr>
+
 
             </thead>
-            </thead>
 
-            <tbody>
             <tbody>
 
                 @forelse ($pengajuans as $item)
@@ -96,60 +86,42 @@
                     <td>
 
                         APR00{{ $item->id }}
-                        APR00{{ $item->id }}
 
-                    </td>
+            
                     </td>
 
 
                     {{-- PEGAWAI --}}
                     <td>
-                    {{-- PEGAWAI --}}
-                    <td>
 
-                        <div class="d-flex py-1 align-items-center">
                         <div class="d-flex py-1 align-items-center">
 
                             <span class="avatar me-2 bg-primary text-white">
-                            <span class="avatar me-2 bg-primary text-white">
 
-                                {{ substr($item->pegawai->nama ?? 'P', 0, 1) }}
+                                {{ substr(optional($item->pegawai)->nama ?? 'P',0,1) }}
 
-                            </span>
                             </span>
 
                             <div class="flex-fill">
-                            <div class="flex-fill">
 
                                 <div class="font-weight-medium">
-                                <div class="font-weight-medium">
 
-                                    {{ $item->pegawai->nama ?? '-' }}
-                                    {{ $item->pegawai->nama ?? '-' }}
+                                    {{ optional($item->pegawai)->nama ?? '-' }}
 
-                                </div>
                                 </div>
 
                                 <div class="text-secondary">
-                                <div class="text-secondary">
 
-                                    {{ $item->pegawai->divisi ?? '-' }}
+                                    {{ optional($item->pegawai)->divisi ?? '-' }}
 
-                                </div>
                                 </div>
 
                             </div>
-                            </div>
 
                         </div>
-                        </div>
+
 
                     </td>
-                    </td>
-
-
-                    {{-- JENIS --}}
-                    <td>
                     {{-- JENIS --}}
                     <td>
 
@@ -174,17 +146,13 @@
                         @endif
 
                     </td>
-                    </td>
 
 
-                    {{-- TANGGAL --}}
-                    <td>
                     {{-- TANGGAL --}}
                     <td>
 
                         {{ $item->tanggal_mulai ?? '-' }}
 
-                    </td>
                     </td>
 
 
@@ -195,8 +163,6 @@
 
                     </td>
 
-                    {{-- SPV --}}
-                    <td>
                     {{-- SPV --}}
                     <td>
 
@@ -215,11 +181,7 @@
                         @endif
 
                     </td>
-                    </td>
 
-
-                    {{-- MANAGER --}}
-                    <td>
                     {{-- MANAGER --}}
                     <td>
 
@@ -241,8 +203,6 @@
 
                     {{-- HRD --}}
                     <td>
-                    {{-- HRD --}}
-                    <td>
 
                         @if (($item->status_hrd ?? '') == 'approved')
                         <span class="badge bg-success-lt">
@@ -259,7 +219,6 @@
                         @endif
 
                     </td>
-                    </td>
 
 
                     {{-- STATUS FINAL --}}
@@ -267,9 +226,9 @@
                     <td>
 
                         @if (
-                        $item->status_spv == 'approved' &&
-                        $item->status_manager == 'approved' &&
-                        $item->status_hrd == 'approved'
+                        $item->status_spv == 'Approved' &&
+                        $item->status_manager == 'Approved' &&
+                        $item->status_hrd == 'Approved'
                         )
 
                         <span class="badge bg-success text-white">
@@ -306,7 +265,6 @@
                     <td>
 
                         <div class="btn-list flex-nowrap">
-                        <div class="btn-list flex-nowrap">
 
                             {{-- SPV --}}
                             @if (
@@ -342,7 +300,7 @@
                             {{-- MANAGER --}}
                             @if (
                             session('role') == 'manager' &&
-                            $item->status_spv == 'approved' &&
+                            $item->status_spv == 'Approved' &&
                             $item->status_manager == 'pending'
                             )
 
@@ -374,8 +332,8 @@
                             {{-- HRD --}}
                             @if (
                             session('role') == 'hrd' &&
-                            $item->status_spv == 'approved' &&
-                            $item->status_manager == 'approved' &&
+                            $item->status_spv == 'Approved' &&
+                            $item->status_manager == 'Approved' &&
                             $item->status_hrd == 'pending'
                             )
 
@@ -409,31 +367,25 @@
                 </tr>
 
                 @empty
-                @empty
+
 
                 <tr>
-                <tr>
 
-                    <td colspan="10" class="text-center text-secondary py-4">
+                    <td colspan="11" class="text-center text-secondary py-4">
 
                         Belum ada data pengajuan
 
-                    </td>
                     </td>
 
                 </tr>
                 @endforelse
 
             </tbody>
-            </tbody>
 
-        </table>
         </table>
 
     </div>
-    </div>
 
-</div>
 </div>
 
 
