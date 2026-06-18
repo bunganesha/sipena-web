@@ -133,10 +133,7 @@ class AbsensiController extends Controller
 
     public function absensiSaya()
     {
-        $user = auth()->user();
-
-        $data = \App\Models\Absensi::where('username', $user->username)
-            ->get();
+        $data = Absensi::with('pegawai')->get();
 
         return view('absensi.saya', compact('data'));
     }

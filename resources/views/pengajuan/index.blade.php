@@ -242,45 +242,34 @@
 
                                             <div class="row">
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Pegawai</label>
-                            @if(session('role') == 'pegawai')
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Pegawai</label>
+                                                    @if (session('role') == 'pegawai')
+                                                        <input type="hidden" name="pegawai_id"
+                                                            value="{{ session('pegawai_id') }}">
 
-                            <input type="hidden"
-                                name="pegawai_id"
-                                value="{{ session('pegawai_id') }}">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label">Pegawai</label>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Pegawai</label>
+                                                            <input type="text" class="form-control"
+                                                                value="{{ session('username') }}" readonly>
+                                                        </div>
+                                                    @else
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label">Pegawai</label>
 
-                                <input type="text"
-                                    class="form-control"
-                                    value="{{ session('username') }}"
-                                    readonly>
-                            </div>
+                                                            <select name="pegawai_id" class="form-select" required>
 
-                            @else
+                                                                @foreach ($pegawais as $pegawai)
+                                                                    <option value="{{ $pegawai->id }}">
+                                                                        {{ $pegawai->nip }} - {{ $pegawai->nama }}
+                                                                    </option>
+                                                                @endforeach
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Pegawai</label>
-
-                                <select name="pegawai_id"
-                                    class="form-select"
-                                    required>
-
-                                    @foreach($pegawais as $pegawai)
-
-                                    <option value="{{ $pegawai->id }}">
-                                        {{ $pegawai->nip }} - {{ $pegawai->nama }}
-                                    </option>
-
-                                    @endforeach
-
-                                </select>
-                            </div>
-
-                            @endif
-                        </div>
+                                                            </select>
+                                                        </div>
+                                                    @endif
+                                                </div>
 
                                                 <div class="col-md-6 mb-3">
 
@@ -403,116 +392,109 @@
 
     {{-- MODAL TAMBAH --}}
     <div class="modal modal-blur fade" id="modalTambah" tabindex="-1">
-
         <div class="modal-dialog modal-lg modal-dialog-centered">
-
             <div class="modal-content">
 
                 <form action="/pengajuan" method="POST">
-
                     @csrf
 
                     <div class="modal-header">
-
                         <h5 class="modal-title">
-
                             Tambah Pengajuan
-
                         </h5>
 
                         <button type="button" class="btn-close" data-bs-dismiss="modal">
-
                         </button>
-
                     </div>
 
-
                     <div class="modal-body">
-
                         <div class="row">
 
+                            {{-- Pegawai --}}
                             <div class="col-md-6 mb-3">
+                                <label class="form-label">Pegawai</label>
 
-                                <label class="form-label">
-
-                                    Pegawai
-
-                                </label>
-
-                                <select name="pegawai_id" class="form-select">
-
+                                <select name="pegawai_id" class="form-select" required>
                                     @foreach ($pegawais as $pegawai)
                                         <option value="{{ $pegawai->id }}">
-
                                             {{ $pegawai->nama }}
-
                                         </option>
                                     @endforeach
-
                                 </select>
-
                             </div>
 
-
+                            {{-- Jenis --}}
                             <div class="col-md-6 mb-3">
+                                <label class="form-label">Jenis Pengajuan</label>
 
-                                <label class="form-label">
-
-                                    Jenis Pengajuan
-
-                                </label>
-
-                                <select name="jenis_pengajuan" class="form-select">
-
-                                    <option value="cuti">
-                                        Cuti
-                                    </option>
-
-                                    <option value="izin">
-                                        Izin
-                                    </option>
-
-                                    <option value="sakit">
-                                        Sakit
-                                    </option>
-
+                                <select name="jenis_pengajuan" class="form-select" required>
+                                    <option value="cuti">Cuti</option>
+                                    <option value="izin">Izin</option>
+                                    <option value="sakit">Sakit</option>
                                 </select>
+                            </div>
 
+                            {{-- Tanggal Mulai --}}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Mulai</label>
+
+                                <input type="date" name="tanggal_mulai" class="form-control" required>
+                            </div>
+
+                            {{-- Tanggal Selesai --}}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Selesai</label>
+
+                                <input type="date" name="tanggal_selesai" class="form-control" required>
+                            </div>
+
+                            {{-- Alasan --}}
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Alasan</label>
+
+                                <textarea name="alasan" rows="4" class="form-control" required></textarea>
                             </div>
 
                         </div>
+                    </div>
 
+                    <div class="modal-footer">
+                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">
+                            Batal
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            Simpan
+                        </button>
                     </div>
 
                 </form>
 
             </div>
-
         </div>
-
     </div>
 
 @endsection
 
 {{-- SCRIPT --}}
 @push('scripts')
-<script>
-    function showDetail(el) {
+    <script>
+        function showDetail(el) {
 
-        const data = JSON.parse(el.dataset.pengajuan);
+            const data = JSON.parse(el.dataset.pengajuan);
 
-        document.getElementById('d_nama').innerText = data.pegawai?.nama ?? '-';
-        document.getElementById('d_nip').innerText = data.pegawai?.nip ?? '-';
-        document.getElementById('d_jenis').innerText = data.jenis_pengajuan ?? '-';
-        document.getElementById('d_tanggal').innerText =
-            (data.tanggal_mulai ?? '-') + ' - ' + (data.tanggal_selesai ?? '-');
-        document.getElementById('d_alasan').innerText = data.alasan ?? '-';
+            document.getElementById('d_nama').innerText = data.pegawai?.nama ?? '-';
+            document.getElementById('d_nip').innerText = data.pegawai?.nip ?? '-';
+            document.getElementById('d_jenis').innerText = data.jenis_pengajuan ?? '-';
+            document.getElementById('d_tanggal').innerText =
+                (data.tanggal_mulai ?? '-') + ' - ' + (data.tanggal_selesai ?? '-');
+            document.getElementById('d_alasan').innerText = data.alasan ?? '-';
 
-        document.getElementById('d_spv').innerText = data.status_spv ?? '-';
-        document.getElementById('d_manager').innerText = data.status_manager ?? '-';
-        document.getElementById('d_hrd').innerText = data.status_hrd ?? '-';
+            document.getElementById('d_spv').innerText = data.status_spv ?? '-';
+            document.getElementById('d_manager').innerText = data.status_manager ?? '-';
+            document.getElementById('d_hrd').innerText = data.status_hrd ?? '-';
 
-        new bootstrap.Modal(document.getElementById('modalDetail')).show();
-    }
-</script>
+            new bootstrap.Modal(document.getElementById('modalDetail')).show();
+        }
+    </script>
 @endpush

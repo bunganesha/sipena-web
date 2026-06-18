@@ -79,9 +79,9 @@ class PengajuanController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'alasan' => $request->alasan,
-            'status_spv' => 'process',
-            'status_manager' => 'process',
-            'status_hrd' => 'process',
+            'status_spv' => 'pending',
+            'status_manager' => 'pending',
+            'status_hrd' => 'pending',
         ]);
 
         return redirect()
