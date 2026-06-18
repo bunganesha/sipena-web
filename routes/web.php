@@ -9,6 +9,7 @@ use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\DashboardController;
 
 use App\Models\Pegawai;
 use App\Models\Absensi;
@@ -32,106 +33,11 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 
-// ====================== DASHBOARD ======================
+// ====================== DASHBOARD (FIXED - NO DUPLICATION) ======================
 
-Route::middleware(['auth', 'role:hrd'])
-    ->get('/dashboard/hrd', function () {
-
-    $totalPegawai = Pegawai::count();
-
-    $hadir = Absensi::where('status_absensi', 'hadir')->count();
-
-    $izin = Absensi::where('status_absensi', 'izin')->count();
-
-    $sakit = Absensi::where('status_absensi', 'sakit')->count();
-
-    $cuti = Absensi::where('status_absensi', 'cuti')->count();
-
-    $alpha = Absensi::where('status_absensi', 'alpha')->count();
-
-    return view('dashboard.index', compact(
-        'totalPegawai',
-        'hadir',
-        'izin',
-        'sakit',
-        'cuti',
-        'alpha'
-    ));
-});
-
-Route::middleware(['auth', 'role:manager'])
-    ->get('/dashboard/manager', function () {
-
-    $totalPegawai = Pegawai::count();
-
-    $hadir = Absensi::where('status_absensi', 'hadir')->count();
-
-    $izin = Absensi::where('status_absensi', 'izin')->count();
-
-    $sakit = Absensi::where('status_absensi', 'sakit')->count();
-
-    $cuti = Absensi::where('status_absensi', 'cuti')->count();
-
-    $alpha = Absensi::where('status_absensi', 'alpha')->count();
-
-    return view('dashboard.index', compact(
-        'totalPegawai',
-        'hadir',
-        'izin',
-        'sakit',
-        'cuti',
-        'alpha'
-    ));
-});
-
-Route::middleware(['auth', 'role:spv'])
-    ->get('/dashboard/spv', function () {
-
-    $totalPegawai = Pegawai::count();
-
-    $hadir = Absensi::where('status_absensi', 'hadir')->count();
-
-    $izin = Absensi::where('status_absensi', 'izin')->count();
-
-    $sakit = Absensi::where('status_absensi', 'sakit')->count();
-
-    $cuti = Absensi::where('status_absensi', 'cuti')->count();
-
-    $alpha = Absensi::where('status_absensi', 'alpha')->count();
-
-    return view('dashboard.index', compact(
-        'totalPegawai',
-        'hadir',
-        'izin',
-        'sakit',
-        'cuti',
-        'alpha'
-    ));
-});
-
-Route::middleware(['auth', 'role:pegawai'])
-    ->get('/dashboard/pegawai', function () {
-
-    $totalPegawai = Pegawai::count();
-
-    $hadir = Absensi::where('status_absensi', 'hadir')->count();
-
-    $izin = Absensi::where('status_absensi', 'izin')->count();
-
-    $sakit = Absensi::where('status_absensi', 'sakit')->count();
-
-    $cuti = Absensi::where('status_absensi', 'cuti')->count();
-
-    $alpha = Absensi::where('status_absensi', 'alpha')->count();
-
-    return view('dashboard.index', compact(
-        'totalPegawai',
-        'hadir',
-        'izin',
-        'sakit',
-        'cuti',
-        'alpha'
-    ));
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 });
 
 
@@ -200,7 +106,9 @@ Route::middleware(['auth', 'role:pegawai'])->group(function () {
             ->name('destroy');
 
     });
-    Route::get('/absensi-saya', [AbsensiController::class, 'absensiSaya']) ->name('absensi.saya');
+
+    Route::get('/absensi-saya', [AbsensiController::class, 'absensiSaya'])
+        ->name('absensi.saya');
 
 });
 
@@ -263,12 +171,10 @@ Route::middleware(['auth', 'role:hrd,manager'])->group(function () {
 
     Route::get('/laporan', [LaporanController::class, 'index']);
 
-    Route::post('/laporan/export',
-        [LaporanController::class, 'export'])
+    Route::post('/laporan/export', [LaporanController::class, 'export'])
         ->name('laporan.export');
 
-    Route::post('/laporan/export-pdf',
-        [LaporanController::class, 'exportPdf'])
+    Route::post('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])
         ->name('laporan.export.pdf');
 
 });

@@ -242,29 +242,45 @@
 
                                             <div class="row">
 
-                                                <div class="col-md-6 mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Pegawai</label>
+                            @if(session('role') == 'pegawai')
 
-                                                    <label class="form-label">
+                            <input type="hidden"
+                                name="pegawai_id"
+                                value="{{ session('pegawai_id') }}">
 
-                                                        Pegawai
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pegawai</label>
 
-                                                    </label>
+                                <input type="text"
+                                    class="form-control"
+                                    value="{{ session('username') }}"
+                                    readonly>
+                            </div>
 
-                                                    <select name="pegawai_id" class="form-select">
+                            @else
 
-                                                        @foreach ($pegawais as $pegawai)
-                                                            <option value="{{ $pegawai->id }}"
-                                                                {{ $pegawai->id == $item->pegawai_id ? 'selected' : '' }}>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pegawai</label>
 
-                                                                {{ $pegawai->nama }}
+                                <select name="pegawai_id"
+                                    class="form-select"
+                                    required>
 
-                                                            </option>
-                                                        @endforeach
+                                    @foreach($pegawais as $pegawai)
 
-                                                    </select>
+                                    <option value="{{ $pegawai->id }}">
+                                        {{ $pegawai->nip }} - {{ $pegawai->nama }}
+                                    </option>
 
-                                                </div>
+                                    @endforeach
 
+                                </select>
+                            </div>
+
+                            @endif
+                        </div>
 
                                                 <div class="col-md-6 mb-3">
 
@@ -477,3 +493,26 @@
     </div>
 
 @endsection
+
+{{-- SCRIPT --}}
+@push('scripts')
+<script>
+    function showDetail(el) {
+
+        const data = JSON.parse(el.dataset.pengajuan);
+
+        document.getElementById('d_nama').innerText = data.pegawai?.nama ?? '-';
+        document.getElementById('d_nip').innerText = data.pegawai?.nip ?? '-';
+        document.getElementById('d_jenis').innerText = data.jenis_pengajuan ?? '-';
+        document.getElementById('d_tanggal').innerText =
+            (data.tanggal_mulai ?? '-') + ' - ' + (data.tanggal_selesai ?? '-');
+        document.getElementById('d_alasan').innerText = data.alasan ?? '-';
+
+        document.getElementById('d_spv').innerText = data.status_spv ?? '-';
+        document.getElementById('d_manager').innerText = data.status_manager ?? '-';
+        document.getElementById('d_hrd').innerText = data.status_hrd ?? '-';
+
+        new bootstrap.Modal(document.getElementById('modalDetail')).show();
+    }
+</script>
+@endpush

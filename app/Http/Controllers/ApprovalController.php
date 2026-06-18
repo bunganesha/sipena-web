@@ -31,11 +31,9 @@ class ApprovalController extends Controller
                 $query->where('jenis_pengajuan', 'like', "%{$search}%")
                     ->orWhereHas('pegawai', function ($q) use ($search) {
 
-                        $q->where('nama', 'like', "%{$search}%")
-                          ->orWhere('nip', 'like', "%{$search}%");
-
-                    });
-
+                    $q->where('nama', 'like', "%$search%")
+                        ->orWhere('nip', 'like', "%$search%");
+                });
             })
             ->latest()
             ->get();
@@ -71,22 +69,14 @@ class ApprovalController extends Controller
             if ($role == 'spv') {
 
                 $pengajuan->status_spv = 'approved';
-
-            }
-
-            // MANAGER
-            elseif ($role == 'manager') {
+            } elseif ($role == 'manager') {
 
                 if ($pengajuan->status_spv == 'approved') {
 
                     $pengajuan->status_manager = 'approved';
 
                 }
-
-            }
-
-            // HRD
-            elseif ($role == 'hrd') {
+            } elseif ($role == 'hrd') {
 
                 if (
                     $pengajuan->status_spv == 'approved' &&
@@ -102,37 +92,24 @@ class ApprovalController extends Controller
                             'tanggal' => $pengajuan->tanggal_mulai,
                         ],
                         [
-                            'status_absensi' => strtolower($pengajuan->jenis_pengajuan),
+                            'status_absensi' => $this->mapStatusAbsensi($pengajuan->jenis_pengajuan),
                             'keterangan' => $pengajuan->alasan,
                         ]
                     );
                 }
 
             }
-
-        }
-
-        // =========================
-        // REJECT
-        // =========================
-        else {
+        } else {
 
             if ($role == 'spv') {
 
                 $pengajuan->status_spv = 'rejected';
-
-            }
-
-            elseif ($role == 'manager') {
+            } elseif ($role == 'manager') {
 
                 $pengajuan->status_manager = 'rejected';
-
-            }
-
-            elseif ($role == 'hrd') {
+            } elseif ($role == 'hrd') {
 
                 $pengajuan->status_hrd = 'rejected';
-
             }
 
         }
@@ -144,5 +121,16 @@ class ApprovalController extends Controller
 
         return redirect('/approval')
             ->with('success', 'Status approval berhasil diupdate');
+    }
+    private function mapStatusAbsensi($jenis)
+    {
+        $jenis = strtolower($jenis);
+
+        return match ($jenis) {
+            'cuti' => 'izin',
+            'izin' => 'izin',
+            'sakit' => 'sakit',
+            default => 'izin',
+        };
     }
 }

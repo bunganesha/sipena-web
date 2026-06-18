@@ -131,7 +131,7 @@
                 </div>
 
                 <div class="h1 mt-3 mb-0 text-warning">
-                    12
+                    {{ $pending }}
                 </div>
 
             </div>
@@ -175,7 +175,7 @@
                 </div>
 
                 <div class="h1 mt-3 mb-0 text-danger">
-                    5
+                    {{ $alpha }}
                 </div>
 
             </div>
@@ -216,69 +216,34 @@
                         </tr>
 
                     </thead>
-
                     <tbody>
-
+                        @forelse($absensis as $absen)
                         <tr>
-
-                            <td>23001</td>
-
-                            <td>Budi Santoso</td>
-
+                            <td>{{ $absen->pegawai->nip }}</td>
+                            <td>{{ $absen->pegawai->nama }}</td>
                             <td>
                                 <span class="badge bg-blue-lt">
-                                    IT
+                                    {{ $absen->pegawai->divisi }}
                                 </span>
                             </td>
-
                             <td>
-                                <span class="badge bg-success-lt">
-                                    Hadir
+                                <span class="badge
+                    {{ $absen->status_absensi == 'hadir' ? 'bg-success-lt' : '' }}
+                    {{ $absen->status_absensi == 'izin' ? 'bg-warning-lt' : '' }}
+                    {{ $absen->status_absensi == 'sakit' ? 'bg-info-lt' : '' }}
+                    {{ $absen->status_absensi == 'alpa' ? 'bg-danger-lt' : '' }}
+                ">
+                                    {{ ucfirst($absen->status_absensi) }}
                                 </span>
                             </td>
-
                         </tr>
-
+                        @empty
                         <tr>
-
-                            <td>23002</td>
-
-                            <td>Siti Aisyah</td>
-
-                            <td>
-                                <span class="badge bg-purple-lt">
-                                    HRD
-                                </span>
+                            <td colspan="4" class="text-center">
+                                Tidak ada data absensi hari ini
                             </td>
-
-                            <td>
-                                <span class="badge bg-warning-lt">
-                                    Cuti
-                                </span>
-                            </td>
-
                         </tr>
-
-                        <tr>
-
-                            <td>23003</td>
-
-                            <td>Andi Saputra</td>
-
-                            <td>
-                                <span class="badge bg-cyan-lt">
-                                    Finance
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="badge bg-danger-lt">
-                                    Alfa
-                                </span>
-                            </td>
-
-                        </tr>
-
+                        @endforelse
                     </tbody>
 
                 </table>
@@ -306,28 +271,28 @@
             <div class="list-group list-group-flush">
 
                 <a href="/pegawai"
-                   class="list-group-item list-group-item-action">
+                    class="list-group-item list-group-item-action">
 
                     👨‍💼 Kelola Pegawai
 
                 </a>
 
                 <a href="/absensi"
-                   class="list-group-item list-group-item-action">
+                    class="list-group-item list-group-item-action">
 
                     📅 Data Absensi
 
                 </a>
 
                 <a href="/approval"
-                   class="list-group-item list-group-item-action">
+                    class="list-group-item list-group-item-action">
 
                     ✅ Approval Pengajuan
 
                 </a>
 
                 <a href="/laporan"
-                   class="list-group-item list-group-item-action">
+                    class="list-group-item list-group-item-action">
 
                     📊 Laporan Absensi
 

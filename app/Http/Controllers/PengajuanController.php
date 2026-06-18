@@ -30,21 +30,26 @@ class PengajuanController extends Controller
                 $query->where('jenis_pengajuan', 'like', "%{$search}%")
                     ->orWhereHas('pegawai', function ($q) use ($search) {
 
-                        $q->where('nama', 'like', "%{$search}%")
-                          ->orWhere('nip', 'like', "%{$search}%");
-
-                    });
-
+                    $q->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nip', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->get();
 
         $pegawais = Pegawai::all();
 
-        return view('pengajuan.index', compact(
-            'pengajuans',
-            'pegawais'
-        ));
+        $pegawais = Pegawai::all();
+
+        return view('pengajuan.index', compact('pengajuans', 'pegawais'));
+    }
+
+
+    public function create()
+    {
+        $pegawais = Pegawai::all(); // INI YANG KAMU LUPA
+
+        return view('pengajuan.create', compact('pegawais'));
     }
 
 
@@ -98,6 +103,17 @@ class PengajuanController extends Controller
         }
 
         $pengajuan = Pengajuan::findOrFail($id);
+        if (
+            $pengajuan->status_spv != 'pending' ||
+            $pengajuan->status_manager != 'pending' ||
+            $pengajuan->status_hrd != 'pending'
+        ) {
+
+            return back()->with(
+                'error',
+                'Pengajuan yang sudah diproses tidak bisa diedit'
+            );
+        }
 
         $pengajuan->update([
             'pegawai_id' => $request->pegawai_id,
