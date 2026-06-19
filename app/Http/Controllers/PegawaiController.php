@@ -45,7 +45,12 @@ class PegawaiController extends Controller
                 $pegawai->jatah_cuti - $jumlahCuti;
         }
 
-        return view('pegawai.index', compact('pegawais'));
+        $users = User::doesntHave('pegawai')->get();
+
+        return view('pegawai.index', compact(
+            'pegawais',
+            'users'
+        ));
     }
 
 
@@ -74,20 +79,23 @@ class PegawaiController extends Controller
         }
 
         $request->validate([
+            'id_user' => 'required|exists:users,id',
             'nip' => 'required|unique:pegawais',
             'nama' => 'required',
             'jabatan' => 'required',
             'divisi' => 'required',
             'status' => 'required',
+            'jatah_cuti' => 'required|numeric|min:0',
         ]);
 
         Pegawai::create([
+            'id_user' => $request->id_user,
             'nip' => $request->nip,
             'nama' => $request->nama,
             'jabatan' => $request->jabatan,
             'divisi' => $request->divisi,
-            'jatah_cuti' => 12,
-            'sisa_cuti' => 12,
+            'jatah_cuti' => $request->jatah_cuti,
+            'sisa_cuti' => $request->jatah_cuti,
             'status' => $request->status,
         ]);
 

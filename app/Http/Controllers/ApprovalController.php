@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengajuan;
 use App\Models\Absensi;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ApprovalController extends Controller
 {
@@ -84,6 +85,20 @@ class ApprovalController extends Controller
                 ) {
 
                     $pengajuan->status_hrd = 'approved';
+
+
+                    // Kurangi sisa cuti jika jenisnya cuti
+                    if (strtolower($pengajuan->jenis_pengajuan) == 'cuti') {
+
+                        $pegawai = $pengajuan->pegawai;
+
+                        $jumlahHari = Carbon::parse($pengajuan->tanggal_mulai)
+                            ->diffInDays(Carbon::parse($pengajuan->tanggal_selesai)) + 1;
+
+                        if ($pegawai && $pegawai->sisa_cuti >= $jumlahHari) {
+                            $pegawai->decrement('sisa_cuti', $jumlahHari);
+                        }
+                    }
 
                     // ABSENSI MASUK SETELAH SEMUA APPROVE
                     Absensi::firstOrCreate(

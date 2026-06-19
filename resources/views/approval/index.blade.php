@@ -226,9 +226,9 @@
                     <td>
 
                         @if (
-                        $item->status_spv == 'Approved' &&
-                        $item->status_manager == 'Approved' &&
-                        $item->status_hrd == 'Approved'
+                        $item->status_spv == 'approved' &&
+                        $item->status_manager == 'approved' &&
+                        $item->status_hrd == 'approved'
                         )
 
                         <span class="badge bg-success text-white">
@@ -300,7 +300,7 @@
                             {{-- MANAGER --}}
                             @if (
                             session('role') == 'manager' &&
-                            $item->status_spv == 'Approved' &&
+                            $item->status_spv == 'approved' &&
                             $item->status_manager == 'pending'
                             )
 
@@ -331,11 +331,11 @@
 
                             {{-- HRD --}}
                             @if (
-                            session('role') == 'hrd' &&
-                            $item->status_spv == 'Approved' &&
-                            $item->status_manager == 'Approved' &&
-                            $item->status_hrd == 'pending'
-                            )
+                        session('role') == 'hrd' &&
+                        $item->status_spv == 'approved' &&
+                        $item->status_manager == 'approved' &&
+                        $item->status_hrd == 'pending'
+                        )
 
                             <form action="/approval/{{ $item->id }}" method="POST">
                                 @csrf

@@ -11,6 +11,10 @@ return new class extends Migration
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('id_user')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             $table->string('nip')->unique();
             $table->string('nama');
             $table->string('jabatan');

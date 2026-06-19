@@ -243,35 +243,6 @@
                                             <div class="row">
 
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Pegawai</label>
-                                                    @if (session('role') == 'pegawai')
-                                                        <input type="hidden" name="pegawai_id"
-                                                            value="{{ session('pegawai_id') }}">
-
-                                                        <div class="col-md-6 mb-3">
-                                                            <label class="form-label">Pegawai</label>
-
-                                                            <input type="text" class="form-control"
-                                                                value="{{ session('username') }}" readonly>
-                                                        </div>
-                                                    @else
-                                                        <div class="col-md-6 mb-3">
-                                                            <label class="form-label">Pegawai</label>
-
-                                                            <select name="pegawai_id" class="form-select" required>
-
-                                                                @foreach ($pegawais as $pegawai)
-                                                                    <option value="{{ $pegawai->id }}">
-                                                                        {{ $pegawai->nip }} - {{ $pegawai->nama }}
-                                                                    </option>
-                                                                @endforeach
-
-                                                            </select>
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="col-md-6 mb-3">
 
                                                     <label class="form-label">
 
@@ -414,13 +385,11 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Pegawai</label>
 
-                                <select name="pegawai_id" class="form-select" required>
-                                    @foreach ($pegawais as $pegawai)
-                                        <option value="{{ $pegawai->id }}">
-                                            {{ $pegawai->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ session('username') }}"
+                                    readonly>
                             </div>
 
                             {{-- Jenis --}}

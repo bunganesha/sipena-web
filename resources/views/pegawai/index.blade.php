@@ -156,7 +156,24 @@
                 <div class="modal-body">
 
                     <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">User</label>
 
+                            <select name="id_user" class="form-select" required>
+
+                                <option value="">Pilih User</option>
+
+                                @foreach($users as $user)
+
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->username }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+                        </div>
+                        
                         <div class="col-md-6 mb-3">
                             <label class="form-label">NIP</label>
                             <input type="text" name="nip" class="form-control" required>
