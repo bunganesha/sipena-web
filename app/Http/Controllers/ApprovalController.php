@@ -81,7 +81,7 @@ class ApprovalController extends Controller
 
             elseif ($role == 'hrd' && $pengajuan->status_manager == 'approved') {
                 $pengajuan->status_hrd = 'approved';
-
+                
                 // =========================
                 // FINAL APPROVAL LOGIC
                 // =========================
@@ -94,12 +94,27 @@ class ApprovalController extends Controller
                     $jumlahHari = Carbon::parse($pengajuan->tanggal_mulai)
                         ->diffInDays(Carbon::parse($pengajuan->tanggal_selesai)) + 1;
 
-                    if ($pegawai && $pegawai->sisa_cuti >= $jumlahHari) {
+
+                    if ($pegawai) {
+
+                        if ($pegawai->sisa_cuti < $jumlahHari) {
+                            return back()->with(
+                                'error',
+                                'Sisa cuti pegawai tidak mencukupi.'
+                            );
+                        }
+
                         $pegawai->decrement('sisa_cuti', $jumlahHari);
+
+                        $pegawai->refresh();
+
+                        
+
+                        
                     }
                 }
 
-                // Buat absensi otomatis
+                // Tetap seperti semula
                 Absensi::firstOrCreate(
                     [
                         'pegawai_id' => $pengajuan->pegawai_id,

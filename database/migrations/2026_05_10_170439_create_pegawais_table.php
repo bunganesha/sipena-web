@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('jabatan');
             $table->string('divisi');
 
-            $table->integer('jatah_cuti')->default(12);
-            $table->integer('sisa_cuti')->default(12);
+            $table->integer('jatah_cuti')->default(3);
+            $table->integer('sisa_cuti')->default(3);
 
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
 

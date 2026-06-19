@@ -66,11 +66,15 @@ class PengajuanController extends Controller
         ]);
         $user = auth()->user();
 
-        $pegawai = Pegawai::where('user_id', $user->id)->first();
+        $pegawai = Pegawai::where('id_user', $user->id)->first();
+
+        if (!$pegawai) {
+            return back()->with('error', 'Data pegawai tidak ditemukan.');
+        }
 
         // Hitung jumlah hari cuti
-        $jumlahHari = \Carbon\Carbon::parse($request->tanggal_mulai)
-            ->diffInDays(\Carbon\Carbon::parse($request->tanggal_selesai)) + 1;
+        $jumlahHari = Carbon::parse($request->tanggal_mulai)
+            ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
 
         // Cek sisa cuti
         if (
@@ -82,7 +86,6 @@ class PengajuanController extends Controller
                 'Sisa cuti tidak mencukupi.'
             );
         }
-
         Pengajuan::create([
             'pegawai_id' => $pegawai->id,
             'jenis_pengajuan' => $request->jenis_pengajuan,

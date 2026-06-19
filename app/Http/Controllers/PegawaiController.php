@@ -31,20 +31,6 @@ class PegawaiController extends Controller
         ->latest()
         ->get();
 
-        // HITUNG SISA CUTI
-        foreach ($pegawais as $pegawai) {
-
-            $jumlahCuti = \App\Models\Absensi::where(
-                'pegawai_id',
-                $pegawai->id
-            )
-            ->where('status_absensi', 'cuti')
-            ->count();
-
-            $pegawai->sisa_cuti =
-                $pegawai->jatah_cuti - $jumlahCuti;
-        }
-
         $users = User::doesntHave('pegawai')->get();
 
         return view('pegawai.index', compact(
