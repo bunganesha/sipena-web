@@ -58,9 +58,7 @@ Route::middleware(['auth', 'role:hrd'])->group(function () {
 
         Route::delete('/{id}', [PegawaiController::class, 'destroy'])
             ->name('destroy');
-
     });
-
 });
 
 
@@ -81,9 +79,7 @@ Route::middleware(['auth', 'role:hrd'])->group(function () {
 
         Route::delete('/{id}', [UserController::class, 'destroy'])
             ->name('destroy');
-
     });
-
 });
 
 
@@ -104,12 +100,10 @@ Route::middleware(['auth', 'role:pegawai'])->group(function () {
 
         Route::delete('/{id}', [PengajuanController::class, 'destroy'])
             ->name('destroy');
-
     });
 
     Route::get('/absensi-saya', [AbsensiController::class, 'absensiSaya'])
         ->name('absensi.saya');
-
 });
 
 
@@ -139,9 +133,7 @@ Route::middleware(['auth', 'role:hrd'])->group(function () {
 
         Route::post('/import', [AbsensiController::class, 'import'])
             ->name('import');
-
     });
-
 });
 
 
@@ -159,9 +151,9 @@ Route::middleware(['auth', 'role:hrd,manager,spv'])->group(function () {
 
         Route::put('/{id}', [ApprovalController::class, 'update'])
             ->name('update');
-
+        Route::get('/{id}/detail', [ApprovalController::class, 'detail'])
+            ->name('detail');
     });
-
 });
 
 
@@ -176,5 +168,4 @@ Route::middleware(['auth', 'role:hrd,manager'])->group(function () {
 
     Route::post('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])
         ->name('laporan.export.pdf');
-
 });

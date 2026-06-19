@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class AbsensiImport implements ToModel
+class AbsensiImport implements ToCollection
 {
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
         // Ambil NIP dari header
         $nipText = $rows[7][10] ?? null;
