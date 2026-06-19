@@ -66,7 +66,7 @@ class PengajuanController extends Controller
         ]);
         $user = auth()->user();
 
-        $pegawai = Pegawai::where('id_user', $user->id)->first();
+        $pegawai = Pegawai::where('user_id', $user->id)->first();
 
         // Hitung jumlah hari cuti
         $jumlahHari = \Carbon\Carbon::parse($request->tanggal_mulai)

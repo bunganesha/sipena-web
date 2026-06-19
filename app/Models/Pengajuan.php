@@ -38,4 +38,9 @@ class Pengajuan extends Model
             'pegawai_id'
         );
     }
+
+    public function logs()
+    {
+        return $this->hasMany(ApprovalLog::class);
+    }
 }
