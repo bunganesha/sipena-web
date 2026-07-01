@@ -9,111 +9,116 @@ use Carbon\Carbon;
 
 class PengajuanController extends Controller
 {
+    // =========================
+    // TAMPIL DATA PENGAJUAN
+    // =========================
     public function index(Request $request)
-    {   
-        if (
-            session('role') != 'pegawai' &&
-            session('role') != 'hrd'
-        ) {
+    {
+        if (!in_array(session('role'), ['pegawai', 'spv', 'manager', 'hrd'])) {
             abort(403);
         }
+
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
 
         $search = $request->search;
 
         $pengajuans = Pengajuan::with('pegawai')
+            ->where('pegawai_id', $pegawai->id)
             ->when($search, function ($query) use ($search) {
-                $query->where('jenis_pengajuan', 'like', "%{$search}%")
-                    ->orWhereHas('pegawai', function ($q) use ($search) {
-                        $q->where('nama', 'like', "%{$search}%")
-                        ->orWhere('nip', 'like', "%{$search}%");
-                    });
+                $query->where(function ($q) use ($search) {
+                    $q->where('jenis_pengajuan', 'like', "%{$search}%")
+                        ->orWhere('alasan', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->get();
 
-        $pegawais = Pegawai::all();
-
-        return view('pengajuan.index', compact(
-            'pengajuans',
-            'pegawais'
-        ));
+        return view('pengajuan.index', compact('pengajuans'));
     }
+
+    // =========================
+    // FORM CREATE
+    // =========================
     public function create()
     {
-        $pegawais = Pegawai::all(); // INI YANG KAMU LUPA
+        if (!in_array(session('role'), ['pegawai', 'spv', 'manager', 'hrd'])) {
+            abort(403);
+        }
 
-        return view('pengajuan.create', compact('pegawais'));
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
+
+        return view('pengajuan.create', compact('pegawai'));
     }
-
 
     // =========================
     // SIMPAN DATA
     // =========================
     public function store(Request $request)
     {
-        if (
-            session('role') != 'pegawai' &&
-            session('role') != 'hrd'
-        ) {
+        if (!in_array(session('role'), ['pegawai', 'spv', 'manager', 'hrd'])) {
             abort(403);
         }
 
         $request->validate([
-            'jenis_pengajuan' => 'required',
-            'tanggal_mulai' => 'required',
-            'tanggal_selesai' => 'required',
-            'alasan' => 'required',
+            'jenis_pengajuan' => 'required|in:cuti,izin,sakit',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'alasan' => 'required|string|max:1000',
         ]);
-        $user = auth()->user();
 
-        $pegawai = Pegawai::where('id_user', $user->id)->first();
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
 
-        if (!$pegawai) {
-            return back()->with('error', 'Data pegawai tidak ditemukan.');
-        }
-
-        // Hitung jumlah hari cuti
         $jumlahHari = Carbon::parse($request->tanggal_mulai)
             ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
 
-        // Cek sisa cuti
         if (
             strtolower($request->jenis_pengajuan) == 'cuti' &&
             $jumlahHari > $pegawai->sisa_cuti
         ) {
-            return back()->with(
-                'error',
-                'Sisa cuti tidak mencukupi.'
-            );
+            return back()
+                ->withInput()
+                ->with('error', 'Sisa cuti Anda tidak mencukupi.');
         }
+
         Pengajuan::create([
-            'pegawai_id' => $pegawai->id,
-            'jenis_pengajuan' => $request->jenis_pengajuan,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan' => $request->alasan,
+            'pegawai_id'       => $pegawai->id,
+            'jenis_pengajuan'  => strtolower($request->jenis_pengajuan),
+            'tanggal_mulai'    => $request->tanggal_mulai,
+            'tanggal_selesai'  => $request->tanggal_selesai,
+            'alasan'           => $request->alasan,
         ]);
 
         return redirect()
             ->route('pengajuan.index')
-            ->with('success', 'Pengajuan berhasil ditambahkan');
+            ->with('success', 'Pengajuan berhasil dikirim.');
     }
-
 
     // =========================
     // UPDATE DATA
     // =========================
     public function update(Request $request, $id)
     {
-        if (
-            session('role') != 'pegawai' &&
-            session('role') != 'hrd'
-        ) {
+        if (!in_array(session('role'), ['pegawai', 'spv', 'manager', 'hrd'])) {
             abort(403);
         }
 
+        $request->validate([
+            'jenis_pengajuan' => 'required|in:cuti,izin,sakit',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'alasan' => 'required|string|max:1000',
+        ]);
+
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
+
         $pengajuan = Pengajuan::findOrFail($id);
 
+        // Pastikan hanya pemilik yang bisa edit
+        if ($pengajuan->pegawai_id != $pegawai->id) {
+            abort(403);
+        }
+
+        // Sudah diproses tidak boleh diedit
         if (
             $pengajuan->status_spv != 'pending' ||
             $pengajuan->status_manager != 'pending' ||
@@ -121,43 +126,68 @@ class PengajuanController extends Controller
         ) {
             return back()->with(
                 'error',
-                'Pengajuan yang sudah diproses tidak bisa diedit'
+                'Pengajuan yang sudah diproses tidak dapat diedit.'
             );
         }
 
-        $user = auth()->user();
-        $pegawai = Pegawai::where('id_user', $user->id)->first();
+        $jumlahHari = Carbon::parse($request->tanggal_mulai)
+            ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
+
+        if (
+            strtolower($request->jenis_pengajuan) == 'cuti' &&
+            $jumlahHari > $pegawai->sisa_cuti
+        ) {
+            return back()
+                ->withInput()
+                ->with('error', 'Sisa cuti Anda tidak mencukupi.');
+        }
 
         $pengajuan->update([
-            'pegawai_id' => $pegawai->id,
             'jenis_pengajuan' => strtolower($request->jenis_pengajuan),
-            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_mulai'   => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan' => $request->alasan,
+            'alasan'          => $request->alasan,
         ]);
 
         return redirect()
             ->route('pengajuan.index')
-            ->with('success', 'Pengajuan berhasil diupdate');
+            ->with('success', 'Pengajuan berhasil diperbarui.');
     }
-
 
     // =========================
     // HAPUS DATA
     // =========================
     public function destroy($id)
     {
-        if (
-            session('role') != 'pegawai' &&
-            session('role') != 'hrd'
-        ) {
+        if (!in_array(session('role'), ['pegawai', 'spv', 'manager', 'hrd'])) {
             abort(403);
         }
 
-        Pengajuan::findOrFail($id)->delete();
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
+
+        $pengajuan = Pengajuan::findOrFail($id);
+
+        // Pastikan hanya pemilik yang bisa hapus
+        if ($pengajuan->pegawai_id != $pegawai->id) {
+            abort(403);
+        }
+
+        // Sudah diproses tidak boleh dihapus
+        if (
+            $pengajuan->status_spv != 'pending' ||
+            $pengajuan->status_manager != 'pending' ||
+            $pengajuan->status_hrd != 'pending'
+        ) {
+            return back()->with(
+                'error',
+                'Pengajuan yang sudah diproses tidak dapat dihapus.'
+            );
+        }
+
+        $pengajuan->delete();
 
         return redirect()
             ->route('pengajuan.index')
-            ->with('success', 'Pengajuan berhasil dihapus');
+            ->with('success', 'Pengajuan berhasil dihapus.');
     }
 }

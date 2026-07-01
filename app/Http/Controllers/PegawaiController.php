@@ -65,7 +65,7 @@ class PegawaiController extends Controller
         }
 
         $request->validate([
-            'id_user' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'nip' => 'required|unique:pegawais',
             'nama' => 'required',
             'jabatan' => 'required',
@@ -75,7 +75,7 @@ class PegawaiController extends Controller
         ]);
 
         Pegawai::create([
-            'id_user' => $request->id_user,
+            'user_id' => $request->user_id,
             'nip' => $request->nip,
             'nama' => $request->nama,
             'jabatan' => $request->jabatan,

@@ -96,12 +96,7 @@
                         Profile
 
                     </a>
-
-                    <a href="#" class="dropdown-item">
-
-                        Settings
-
-                    </a>
+                    
                     <div class="dropdown-divider"></div>
                     {{-- LOGOUT --}}
                     <form action="{{ route('logout') }}" method="POST">
@@ -208,7 +203,7 @@
                                 </li>
                             @endif
 
-                            @if (session('role') == 'pegawai')
+                            @if(in_array(session('role'), ['pegawai','spv','manager','hrd']))
                                 <li>
                                     <a class="dropdown-item" href="/pengajuan">
 

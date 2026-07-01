@@ -10,10 +10,10 @@ use App\Models\Absensi;
 class Pegawai extends Model
 {
     protected $table = 'pegawais';
-    protected $fillable = ['id_user', 'nip', 'nama', 'jabatan', 'divisi', 'jatah_cuti', 'sisa_cuti', 'status',];
+    protected $fillable = ['user_id', 'nip', 'nama', 'jabatan', 'divisi', 'jatah_cuti', 'sisa_cuti', 'status',];
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
     public function pengajuans()
     {

@@ -41,6 +41,9 @@ class Pengajuan extends Model
 
     public function logs()
     {
-        return $this->hasMany(ApprovalLog::class);
+        return $this->hasMany(
+            ApprovalLog::class,
+            'pengajuan_id'
+        );
     }
 }

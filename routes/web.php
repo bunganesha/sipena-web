@@ -85,7 +85,7 @@ Route::middleware(['auth', 'role:hrd'])->group(function () {
 
 // ====================== PENGAJUAN ======================
 
-Route::middleware(['auth', 'role:pegawai'])->group(function () {
+Route::middleware(['auth', 'role:pegawai,spv,manager,hrd'])->group(function () {
 
     Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
 

@@ -9,388 +9,834 @@
 
     {{-- HEADER --}}
     <div class="card-body border-bottom py-3">
+
         <div class="d-flex align-items-center">
 
             <div class="text-secondary">
-                Kelola approval pengajuan cuti, izin, dan sakit pegawai
+                Kelola Approval Pengajuan Pegawai
             </div>
 
-            <div class="ms-auto text-secondary">
-                <form method="GET" action="/approval">
+            <div class="ms-auto">
+
+                <form method="GET">
+
                     <div class="input-icon">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="Search approval..."
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search..."
+                            name="search"
                             value="{{ request('search') }}">
+
                     </div>
+
                 </form>
+
             </div>
 
         </div>
+
     </div>
 
-    {{-- TABLE --}}
+
     <div class="table-responsive">
+
         <table class="table table-vcenter card-table">
 
             <thead>
+
                 <tr>
+
                     <th>ID</th>
                     <th>Pegawai</th>
+                    <th>Role</th>
                     <th>Jenis</th>
                     <th>Tanggal</th>
-                    <th>Durasi</th>
                     <th>SPV</th>
                     <th>Manager</th>
                     <th>HRD</th>
-                    <th>Status Final</th>
-                    <th class="w-1">Aksi</th>
+                    <th>Status</th>
+                    <th width="180">Aksi</th>
+
                 </tr>
+
             </thead>
 
             <tbody>
-                @forelse ($pengajuans as $item)
+
+                @forelse($pengajuans as $item)
+
+                @php
+
+                $pemohonRole = strtolower(optional(optional($item->pegawai)->user)->role);
+
+                @endphp
+
                 <tr>
 
-                    {{-- ID --}}
-                    <td>APR00{{ $item->id }}</td>
-
-                    {{-- PEGAWAI --}}
                     <td>
-                        <div class="d-flex py-1 align-items-center">
-                            <span class="avatar me-2 bg-primary text-white">
-                                {{ substr(optional($item->pegawai)->nama ?? 'P',0,1) }}
-                            </span>
 
-                            <div>
-                                <div class="fw-bold">
-                                    {{ optional($item->pegawai)->nama ?? '-' }}
-                                </div>
-                                <div class="text-secondary">
-                                    {{ optional($item->pegawai)->divisi ?? '-' }}
-                                </div>
-                            </div>
-                        </div>
+                        APR{{ str_pad($item->id,4,'0',STR_PAD_LEFT) }}
+
                     </td>
 
-                    {{-- JENIS --}}
                     <td>
-                        @php $jenis = strtolower($item->jenis_pengajuan); @endphp
 
-                        <span class="badge
-                            {{ $jenis == 'cuti' ? 'bg-warning-lt' : '' }}
-                            {{ $jenis == 'sakit' ? 'bg-danger-lt' : '' }}
-                            {{ !in_array($jenis,['cuti','sakit']) ? 'bg-primary-lt' : '' }}
-                        ">
-                            {{ $item->jenis_pengajuan }}
+                        <strong>{{ optional($item->pegawai)->nama }}</strong>
+
+                        <br>
+
+                        <small class="text-secondary">
+
+                            {{ optional($item->pegawai)->nip }}
+
+                        </small>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge bg-blue-lt">
+
+                            {{ strtoupper($pemohonRole) }}
+
                         </span>
+
                     </td>
 
-                    {{-- TANGGAL --}}
-                    <td>{{ $item->tanggal_mulai ?? '-' }}</td>
-
-                    {{-- DURASI --}}
-                    <td>{{ $item->durasi ?? '-' }}</td>
-
-                    {{-- SPV --}}
                     <td>
-                        @if($item->status_spv == 'approved')
-                            <span class="badge bg-success-lt">Approved</span>
-                        @elseif($item->status_spv == 'rejected')
-                            <span class="badge bg-danger-lt">Rejected</span>
-                        @else
-                            <span class="badge bg-yellow-lt">Pending</span>
-                        @endif
+
+                        <span class="badge bg-warning-lt">
+
+                            {{ ucfirst($item->jenis_pengajuan) }}
+
+                        </span>
+
                     </td>
 
-                    {{-- MANAGER --}}
                     <td>
-                        @if($item->status_manager == 'approved')
-                            <span class="badge bg-success-lt">Approved</span>
-                        @elseif($item->status_manager == 'rejected')
-                            <span class="badge bg-danger-lt">Rejected</span>
-                        @else
-                            <span class="badge bg-yellow-lt">Pending</span>
-                        @endif
+
+                        {{ $item->tanggal_mulai }}
+
+                        <br>
+
+                        <small class="text-secondary">
+
+                            s/d {{ $item->tanggal_selesai }}
+
+                        </small>
+
                     </td>
 
-                    {{-- HRD --}}
+                    {{-- ========================= --}}
+                    {{-- STATUS SPV --}}
+                    {{-- ========================= --}}
+
                     <td>
-                        @if($item->status_hrd == 'approved')
-                            <span class="badge bg-primary">Mengetahui</span>
-                        @elseif($item->status_hrd == 'rejected')
-                            <span class="badge bg-danger-lt">Rejected</span>
+
+                        @switch($item->status_spv)
+
+                        @case('approved')
+
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+
+                        @break
+
+                        @case('rejected')
+
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+
+                        @break
+
+                        @default
+
+                        @if(in_array($pemohonRole,['manager','hrd']))
+
+                        <span class="badge bg-secondary">
+
+                            -
+
+                        </span>
+
                         @else
-                            <span class="badge bg-secondary-lt">Waiting</span>
+
+                        <span class="badge bg-warning">
+
+                            Pending
+
+                        </span>
+
                         @endif
+
+                        @endswitch
+
                     </td>
 
+                    {{-- ========================= --}}
+                    {{-- STATUS MANAGER --}}
+                    {{-- ========================= --}}
+
+                    <td>
+
+                        @switch($item->status_manager)
+
+                        @case('approved')
+
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+
+                        @break
+
+                        @case('rejected')
+
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+
+                        @break
+
+                        @default
+
+                        @if($pemohonRole=='hrd')
+
+                        <span class="badge bg-secondary">
+
+                            -
+
+                        </span>
+
+                        @else
+
+                        <span class="badge bg-warning">
+
+                            Pending
+
+                        </span>
+
+                        @endif
+
+                        @endswitch
+
+                    </td>
+
+                    {{-- ========================= --}}
+                    {{-- STATUS HRD --}}
+                    {{-- ========================= --}}
+
+                    <td>
+
+                        @if($item->status_hrd=='approved')
+
+                        <span class="badge bg-primary">
+
+                            Mengetahui
+
+                        </span>
+
+                        @elseif($item->status_hrd=='rejected')
+
+                        <span class="badge bg-danger">
+
+                            Rejected
+
+                        </span>
+
+                        @else
+
+                        <span class="badge bg-warning">
+
+                            Waiting
+
+                        </span>
+
+                        @endif
+
+                    </td>
+
+                    {{-- ========================= --}}
                     {{-- STATUS FINAL --}}
-                    <td>
-                        @if(
-                            $item->status_spv == 'approved' &&
-                            $item->status_manager == 'approved' &&
-                            $item->status_hrd == 'approved'
-                        )
-                            <span class="badge bg-success text-white">Approved</span>
+                    {{-- ========================= --}}
 
-                        @elseif(
-                            $item->status_spv == 'rejected' ||
-                            $item->status_manager == 'rejected' ||
-                            $item->status_hrd == 'rejected'
-                        )
-                            <span class="badge bg-danger text-white">Rejected</span>
+                    <td>
+
+                        @php
+
+                        $final = 'Process';
+
+                        if(
+                        $item->status_spv=='rejected' ||
+                        $item->status_manager=='rejected' ||
+                        $item->status_hrd=='rejected'
+                        ){
+                        $final='Rejected';
+                        }
+
+                        elseif($pemohonRole=='pegawai'
+                        &&
+                        $item->status_spv=='approved'
+                        &&
+                        $item->status_manager=='approved'
+                        &&
+                        $item->status_hrd=='approved'
+                        ){
+                        $final='Approved';
+                        }
+
+                        elseif($pemohonRole=='spv'
+                        &&
+                        $item->status_manager=='approved'
+                        &&
+                        $item->status_hrd=='approved'
+                        ){
+                        $final='Approved';
+                        }
+
+                        elseif(
+                        in_array($pemohonRole,['manager','hrd'])
+                        &&
+                        $item->status_hrd=='approved'
+                        ){
+                        $final='Approved';
+                        }
+
+                        @endphp
+
+                        @if($final=='Approved')
+
+                        <span class="badge bg-success">
+
+                            Approved
+
+                        </span>
+
+                        @elseif($final=='Rejected')
+
+                        <span class="badge bg-danger">
+
+                            Rejected
+
+                        </span>
+
                         @else
-                            <span class="badge bg-yellow text-white">Process</span>
+
+                        <span class="badge bg-warning">
+
+                            Process
+
+                        </span>
+
                         @endif
+
                     </td>
 
+                    {{-- ========================= --}}
                     {{-- AKSI --}}
+                    {{-- ========================= --}}
                     <td>
-                        <div class="btn-list flex-nowrap">
 
-                            {{-- SPV / MANAGER MODAL --}}
-                            @if(
-                                (session('role') == 'spv' && $item->status_spv == 'pending') ||
-                                (session('role') == 'manager' && $item->status_spv == 'approved' && $item->status_manager == 'pending')
-                            )
-                                <button class="btn btn-success btn-sm"
-                                    onclick="openModal('approve', '{{ $item->id }}')">
-                                    Approve
-                                </button>
+                        <div class="btn-list">
 
-                                <button class="btn btn-danger btn-sm"
-                                    onclick="openModal('reject', '{{ $item->id }}')">
-                                    Reject
-                                </button>
-                            @endif
+                            <button
+                                class="btn btn-success btn-sm"
+                                onclick="openModal('approve', '{{ $item->id }}')">
 
-                            {{-- HRD (tetap form lama) --}}
-                            @if(
-                                session('role') == 'hrd' &&
-                                $item->status_spv == 'approved' &&
-                                $item->status_manager == 'approved' &&
-                                $item->status_hrd == 'pending'
-                            )
-                                <form action="/approval/{{ $item->id }}" method="POST">
-                                    @csrf @method('PUT')
-                                    <input type="hidden" name="status" value="Approved">
-                                    <button class="btn btn-primary btn-sm">Mengetahui</button>
-                                </form>
+                                {{ session('role') == 'hrd' ? 'Mengetahui' : 'Approve' }}
 
-                                <form action="/approval/{{ $item->id }}" method="POST">
-                                    @csrf @method('PUT')
-                                    <input type="hidden" name="status" value="Rejected">
-                                    <button class="btn btn-danger btn-sm">Reject</button>
-                                </form>
-                            @endif
+                            </button>
 
-                            <button class="btn btn-info btn-sm"
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="openModal('reject', '{{ $item->id }}')">
+
+                                Reject
+
+                            </button>
+
+                            <button
+                                class="btn btn-info btn-sm"
                                 onclick="openDetail('{{ $item->id }}')">
+
                                 Detail
+
                             </button>
 
                         </div>
+
                     </td>
 
                 </tr>
+
                 @empty
+
                 <tr>
-                    <td colspan="10" class="text-center text-secondary py-4">
-                        Belum ada data pengajuan
+
+                    <td colspan="10" class="text-center">
+
+                        Belum ada data.
+
                     </td>
+
                 </tr>
+
                 @endforelse
+
             </tbody>
 
         </table>
+
     </div>
+
 </div>
 
+{{-- ========================================= --}}
 {{-- MODAL APPROVAL --}}
-<div class="modal fade" id="modalApproval">
+{{-- ========================================= --}}
+
+<div class="modal fade" id="modalApproval" tabindex="-1">
+
     <div class="modal-dialog modal-dialog-centered">
+
         <div class="modal-content">
 
-            <form id="approvalForm" method="POST">
+            <form
+                id="approvalForm"
+                method="POST">
+
                 @csrf
                 @method('PUT')
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Approval</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                    <h5
+                        class="modal-title"
+                        id="modalTitle">
+
+                        Approval Pengajuan
+
+                    </h5>
+
+                    <button
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
                 </div>
 
                 <div class="modal-body">
 
-                    <input type="hidden" name="status" id="statusInput">
+                    <input
+                        type="hidden"
+                        name="status"
+                        id="statusInput">
 
-                    <div id="alasanGroup" class="mb-3">
-                        <label class="form-label">Alasan / Catatan</label>
-                        <textarea name="alasan" id="alasanInput"
-                            class="form-control" rows="4"></textarea>
+                    <div
+                        class="mb-3"
+                        id="alasanGroup">
+
+                        <label class="form-label">
+
+                            Catatan
+
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            name="alasan"
+                            id="alasanInput"
+                            placeholder="Masukkan catatan..."></textarea>
+
                     </div>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="confirmCheck">
-                        <span class="form-check-label">Saya yakin dengan keputusan ini</span>
+
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="confirmCheck">
+
+                        <span class="form-check-label">
+
+                            Saya yakin dengan keputusan ini
+
+                        </span>
+
                     </label>
 
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn" id="submitBtn">Submit</button>
+
+                    <button
+                        type="button"
+                        class="btn me-auto"
+                        data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button
+                        class="btn btn-success"
+                        id="submitBtn">
+
+                        Submit
+
+                    </button>
+
                 </div>
 
             </form>
 
         </div>
+
     </div>
+
 </div>
 
+
+{{-- ========================================= --}}
 {{-- MODAL DETAIL --}}
-<div class="modal fade" id="modalDetail">
+{{-- ========================================= --}}
+
+<div class="modal fade" id="modalDetail" tabindex="-1">
+
     <div class="modal-dialog modal-lg">
+
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5>Detail Approval</h5>
+
+                <h5 class="modal-title">
+
+                    Detail Pengajuan
+
+                </h5>
+
+                <button
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
             </div>
 
-            <div class="modal-body" id="detailBody"></div>
+            <div class="modal-body" id="detailBody">
+
+            </div>
 
         </div>
+
     </div>
+
 </div>
 
-
 <script>
-    let selectedId = null;
-    let selectedType = null;
-
     function openModal(type, id) {
-        selectedId = id;
-        selectedType = type;
 
         const modal = new bootstrap.Modal(document.getElementById('modalApproval'));
 
-        document.getElementById('approvalForm').action = `/approval/${id}`;
-        document.getElementById('statusInput').value = type === 'approve' ? 'Approved' : 'Rejected';
+        document.getElementById('approvalForm').action = '/approval/' + id;
+
+        document.getElementById('statusInput').value =
+            type == 'approve' ?
+            'Approved' :
+            'Rejected';
 
         const role = '{{ session("role") }}';
 
-        if (role === 'hrd' && type === 'approve') {
-            document.getElementById('modalTitle').innerText =
-                'Mengetahui Pengajuan';
-        } else {
-            document.getElementById('modalTitle').innerText =
-                type === 'approve' ?
-                'Approve Pengajuan' :
-                'Reject Pengajuan';
-        }
-
-        document.getElementById('submitBtn').className =
-            type === 'approve' ? 'btn btn-success' : 'btn btn-danger';
-
-        document.getElementById('alasanInput').value = '';
-
-        document.getElementById('confirmCheck').checked = false;
-
+        const title = document.getElementById('modalTitle');
+        const submit = document.getElementById('submitBtn');
         const alasanGroup = document.getElementById('alasanGroup');
 
-        if (
-            '{{ session("role") }}' === 'hrd' &&
-            type === 'approve'
-        ) {
-            alasanGroup.style.display = 'none';
+        document.getElementById('alasanInput').value = '';
+        document.getElementById('confirmCheck').checked = false;
+
+        if (type == 'approve') {
+
+            submit.className = 'btn btn-success';
+
+            if (role == 'hrd') {
+
+                title.innerHTML = 'Mengetahui Pengajuan';
+
+                alasanGroup.style.display = 'none';
+
+                submit.innerHTML = 'Mengetahui';
+
+            } else {
+
+                title.innerHTML = 'Approve Pengajuan';
+
+                alasanGroup.style.display = 'block';
+
+                submit.innerHTML = 'Approve';
+
+            }
+
         } else {
+
+            title.innerHTML = 'Reject Pengajuan';
+
+            submit.className = 'btn btn-danger';
+
+            submit.innerHTML = 'Reject';
+
             alasanGroup.style.display = 'block';
+
         }
 
         modal.show();
+
     }
 
-    function openDetail(id) {
-        fetch(`/approval/${id}/detail`)
-            .then(res => res.json())
-            .then(data => {
 
-                let html = `
-                    <div class="mb-3">
-                        <h4>Alasan Pegawai</h4>
-                        <div class="alert alert-info">
-                            ${data.data.alasan ?? '-'}
-                        </div>
+
+    function openDetail(id) {
+
+        fetch('/approval/' + id + '/detail')
+
+            .then(res => res.json())
+
+            .then(res => {
+
+                let data = res.data;
+
+                let html = '';
+
+                html += `
+
+        <div class="mb-3">
+
+            <h4>Data Pengajuan</h4>
+
+            <table class="table table-bordered">
+
+                <tr>
+
+                    <th width="180">Nama</th>
+
+                    <td>${data.pegawai.nama}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Jenis</th>
+
+                    <td>${data.jenis_pengajuan}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Tanggal</th>
+
+                    <td>
+
+                        ${data.tanggal_mulai}
+
+                        s/d
+
+                        ${data.tanggal_selesai}
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Alasan</th>
+
+                    <td>${data.alasan}</td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+        <hr>
+
+        <h4>Riwayat Approval</h4>
+
+        `;
+
+                if (data.logs.length == 0) {
+
+                    html += `
+
+            <div class="alert alert-warning">
+
+                Belum ada approval.
+
+            </div>
+
+            `;
+
+                }
+
+                data.logs.forEach(log => {
+
+                    let badge = '';
+
+                    if (log.status == 'approved') {
+
+                        if (log.role == 'hrd') {
+
+                            badge = '<span class="badge bg-primary">Mengetahui</span>';
+
+                        } else {
+
+                            badge = '<span class="badge bg-success">Approved</span>';
+
+                        }
+
+                    } else {
+
+                        badge = '<span class="badge bg-danger">Rejected</span>';
+
+                    }
+
+                    html += `
+
+            <div class="card mb-2">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>
+
+                            ${log.role.toUpperCase()}
+
+                        </strong>
+
+                        ${badge}
+
                     </div>
 
                     <hr>
 
-                    <h4>Riwayat Approval</h4>
-                `;
+                    <small>
 
-                const logs = data.data.logs ?? [];
+                        ${log.created_at}
 
-                logs.forEach(log => {
+                    </small>
 
-                    let badge = '';
+                    <br><br>
 
-                    if (log.role === 'hrd' && log.status === 'approved') {
-                        badge = '<span class="badge bg-primary text-white">Mengetahui</span>';
-                    } else if (log.status === 'approved') {
-                        badge = '<span class="badge bg-success text-white">Approved</span>';
-                    } else if (log.status === 'rejected') {
-                        badge = '<span class="badge bg-danger text-white">Rejected</span>';
-                    } else {
-                        badge = '<span class="badge bg-secondary text-white">Pending</span>';
+                    ${
+
+                        log.alasan
+
+                        ?
+
+                        `<b>Catatan :</b><br>${log.alasan}`
+
+                        :
+
+                        '<i>Tidak ada catatan</i>'
+
                     }
 
-                    html += `
-                        <div class="card mb-2">
-                            <div class="card-body">
+                </div>
 
-                                <strong>${log.role.toUpperCase()}</strong>
-                                ${badge}
+            </div>
 
-                                <br><br>
+            `;
 
-                                ${log.role === 'hrd'
-                                    ? ''
-                                    : (
-                                        log.alasan
-                                        ? `<b>Catatan:</b><br>${log.alasan}`
-                                        : '<i>Tidak ada catatan</i>'
-                                    )
-                                }
-
-                            </div>
-                        </div>
-                    `;
                 });
 
                 document.getElementById('detailBody').innerHTML = html;
 
                 new bootstrap.Modal(document.getElementById('modalDetail')).show();
+
             });
+
     }
 
-    // VALIDASI SIMPLE
-    document.getElementById('approvalForm').addEventListener('submit', function(e) {
-        const alasan = document.getElementById('alasanInput').value;
-        const status = document.getElementById('statusInput').value;
-        const confirm = document.getElementById('confirmCheck').checked;
 
-        if (!confirm) {
-            e.preventDefault();
-            alert('Harus konfirmasi terlebih dahulu');
-            return;
-        }
 
-        if (status === 'Rejected' && alasan.trim() === '') {
-            e.preventDefault();
-            alert('Alasan wajib diisi untuk reject');
-            return;
-        }
-    });
+
+    document.getElementById('approvalForm')
+
+        .addEventListener('submit', function(e) {
+
+            let status = document.getElementById('statusInput').value;
+
+            let alasan = document.getElementById('alasanInput').value.trim();
+
+            let role = '{{ session("role") }}';
+
+            let confirm = document.getElementById('confirmCheck').checked;
+
+            if (!confirm) {
+
+                e.preventDefault();
+
+                alert('Silakan centang konfirmasi terlebih dahulu.');
+
+                return;
+
+            }
+
+            if (
+
+                status == 'Rejected'
+
+                &&
+
+                alasan == ''
+
+            ) {
+
+                e.preventDefault();
+
+                alert('Alasan reject wajib diisi.');
+
+                return;
+
+            }
+
+            if (
+
+                role != 'hrd'
+
+                &&
+
+                status == 'Approved'
+
+                &&
+
+                alasan == ''
+
+            ) {
+
+                if (
+
+                    !window.confirm(
+
+                        'Approve tanpa catatan?'
+
+                    )
+
+                ) {
+
+                    e.preventDefault();
+
+                    return;
+
+                }
+
+            }
+
+        });
 </script>
 
 @endsection

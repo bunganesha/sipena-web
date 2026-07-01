@@ -17,14 +17,16 @@
                 {{-- PEGAWAI --}}
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Pegawai</label>
-                    <select name="nip" class="form-select" required>
-                        <option value="">-- Pilih Pegawai --</option>
-                        @foreach($pegawais as $pegawai)
-                            <option value="{{ $pegawai->nip }}">
-                                {{ $pegawai->nip }} - {{ $pegawai->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="{{ $pegawai->nama }}"
+                        readonly>
+
+                    <input
+                        type="hidden"
+                        name="pegawai_id"
+                        value="{{ $pegawai->id }}">
                 </div>
 
                 {{-- JENIS PENGAJUAN --}}

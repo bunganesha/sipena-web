@@ -22,27 +22,40 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
 
             $request->session()->regenerate();
+
             session([
+                'user_id'  => Auth::id(),
                 'username' => Auth::user()->username,
-                'role' => Auth::user()->role,
+                'role'     => Auth::user()->role,
             ]);
 
             $user = Auth::user();
 
-            if ($user->role == 'hrd') {
-                return redirect('/dashboard')->with('success', 'Login HRD berhasil');
-            }
+            switch ($user->role) {
 
-            if ($user->role == 'manager') {
-                return redirect('/dashboard')->with('success', 'Login Manager berhasil');
-            }
+                case 'hrd':
+                    return redirect('/dashboard')
+                        ->with('success', 'Login HRD berhasil');
 
-            if ($user->role == 'spv') {
-                return redirect('/dashboard')->with('success', 'Login SPV berhasil');
-            }
+                case 'manager':
+                    return redirect('/dashboard')
+                        ->with('success', 'Login Manager berhasil');
 
-            if ($user->role == 'pegawai') {
-                return redirect('/dashboard')->with('success', 'Login Pegawai berhasil');
+                case 'spv':
+                    return redirect('/dashboard')
+                        ->with('success', 'Login SPV berhasil');
+
+                case 'pegawai':
+                    return redirect('/dashboard')
+                        ->with('success', 'Login Pegawai berhasil');
+
+                default:
+                    Auth::logout();
+
+                    return back()->with(
+                        'error',
+                        'Role tidak dikenali.'
+                    );
             }
         }
 
