@@ -7,6 +7,7 @@ use App\Models\Absensi;
 use App\Models\Pegawai;
 use App\Imports\AbsensiImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AbsensiController extends Controller
 {
@@ -151,5 +152,35 @@ class AbsensiController extends Controller
             ->get();
 
         return view('absensi.saya', compact('data'));
+    }
+    public function exportPdfPegawai(Request $request)
+    {
+        $request->validate([
+            'pegawai_id' => 'required|exists:pegawais,id',
+            'bulan' => 'required',
+        ]);
+
+        $pegawai = Pegawai::findOrFail($request->pegawai_id);
+
+        $bulan = $request->bulan;
+
+        $absensis = Absensi::where('pegawai_id', $pegawai->id)
+            ->whereMonth('tanggal', date('m', strtotime($bulan)))
+            ->whereYear('tanggal', date('Y', strtotime($bulan)))
+            ->orderBy('tanggal')
+            ->get();
+
+        $pdf = Pdf::loadView(
+            'absensi.pdf',
+            compact(
+                'pegawai',
+                'absensis',
+                'bulan'
+            )
+        );
+
+        return $pdf->download(
+            'Absensi-' . $pegawai->nama . '-' . $bulan . '.pdf'
+        );
     }
 }

@@ -11,54 +11,166 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $role = auth()->user()->role;
+        $pegawai = auth()->user()->pegawai;
+
+        // =========================
+        // DATA HRD
+        // =========================
+
         $totalPegawai = Pegawai::count();
 
-        $hadir = Absensi::where('status_absensi', 'hadir')
-            ->whereDate('tanggal', today())
+        $hadir = Absensi::whereDate('tanggal', today())
+            ->where('status_absensi', 'hadir')
             ->count();
 
-        $izin = Absensi::where('status_absensi', 'izin')
-            ->whereDate('tanggal', today())
+        $izin = Absensi::whereDate('tanggal', today())
+            ->where('status_absensi', 'izin')
             ->count();
 
-        $sakit = Absensi::where('status_absensi', 'sakit')
-            ->whereDate('tanggal', today())
+        $sakit = Absensi::whereDate('tanggal', today())
+            ->where('status_absensi', 'sakit')
             ->count();
 
-        $alpha = Absensi::where('status_absensi', 'alpha')
-            ->whereDate('tanggal', today())
+        $cuti = Absensi::whereDate('tanggal', today())
+            ->where('status_absensi', 'cuti')
             ->count();
 
-        $pending = Pengajuan::where(function ($q) {
-            $q->where('status_spv', 'pending')
-                ->orWhere('status_manager', 'pending')
-                ->orWhere('status_hrd', 'pending');
-        })->count();
+        $alpha = Absensi::whereDate('tanggal', today())
+            ->where('status_absensi', 'alpha')
+            ->count();
 
-        $role = session('role');
+
+
+        // =========================
+        // HRD
+        // =========================
+
+        $pendingHrd = Pengajuan::where('status_spv', 'approved')
+            ->where('status_manager', 'approved')
+            ->where('status_hrd', 'pending')
+            ->count();
+
+
+
+        // =========================
+        // SPV
+        // =========================
+
+        $pendingSpv = Pengajuan::where('status_spv', 'pending')->count();
+
+        $approveSpv = Pengajuan::where('status_spv', 'approved')->count();
+
+        $rejectSpv = Pengajuan::where('status_spv', 'rejected')->count();
+
+        $pengajuanSpv = Pengajuan::with('pegawai')
+            ->where('status_spv', 'pending')
+            ->latest()
+            ->take(10)
+            ->get();
+
+
+
+        // =========================
+        // MANAGER
+        // =========================
+
+        $pendingManager = Pengajuan::where('status_spv', 'approved')
+            ->where('status_manager', 'pending')
+            ->count();
+
+        $approveManager = Pengajuan::where('status_manager', 'approved')
+            ->count();
+
+        $rejectManager = Pengajuan::where('status_manager', 'rejected')
+            ->count();
+
+        $pengajuanManager = Pengajuan::with('pegawai')
+            ->where('status_spv', 'approved')
+            ->where('status_manager', 'pending')
+            ->latest()
+            ->take(10)
+            ->get();
+
+
+
+        // =========================
+        // PEGAWAI
+        // =========================
+
+        $pengajuanSaya = 0;
+        $sisaCuti = 0;
+        $hadirSaya = 0;
+
+        if ($pegawai) {
+
+            $pengajuanSaya = Pengajuan::where(
+                'pegawai_id',
+                $pegawai->id
+            )->count();
+
+            $sisaCuti = $pegawai->sisa_cuti;
+
+            $hadirSaya = Absensi::where(
+                'pegawai_id',
+                $pegawai->id
+            )->where(
+                'status_absensi',
+                'hadir'
+            )->count();
+        }
+
+
+
+        // =========================
+        // TABEL
+        // =========================
 
         if ($role == 'pegawai') {
 
-            $pegawai = Pegawai::where('user_id', auth()->id())->first();
-
             $absensis = Absensi::with('pegawai')
                 ->where('pegawai_id', $pegawai->id)
-                ->whereDate('tanggal', today())
+                ->latest('tanggal')
+                ->take(10)
                 ->get();
         } else {
 
             $absensis = Absensi::with('pegawai')
                 ->whereDate('tanggal', today())
+                ->latest()
                 ->get();
         }
 
+
+
         return view('dashboard.index', compact(
+
+            'role',
+            'pegawai',
+
             'totalPegawai',
             'hadir',
             'izin',
             'sakit',
+            'cuti',
             'alpha',
-            'pending',
+
+            'pendingHrd',
+
+            'pendingSpv',
+            'approveSpv',
+            'rejectSpv',
+            'pengajuanSpv',
+
+            'pendingManager',
+            'approveManager',
+            'rejectManager',
+            'pengajuanManager',
+
+            'pengajuanSaya',
+            'sisaCuti',
+            'hadirSaya',
+
             'absensis'
         ));
     }

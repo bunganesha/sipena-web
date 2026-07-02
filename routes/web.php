@@ -146,6 +146,10 @@ Route::middleware(['auth', 'role:hrd'])->group(function () {
 
         Route::post('/import', [AbsensiController::class, 'import'])
             ->name('import');
+        Route::post(
+            '/export-pdf',
+            [AbsensiController::class, 'exportPdfPegawai']
+        )->name('export.pdf');
     });
 });
 
@@ -181,4 +185,7 @@ Route::middleware(['auth', 'role:hrd,manager'])->group(function () {
 
     Route::post('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])
         ->name('laporan.export.pdf');
+
+    Route::get('/laporan/pdf/{pegawai}', [LaporanController::class, 'exportPdfPegawai'])
+        ->name('laporan.pdf.pegawai');
 });

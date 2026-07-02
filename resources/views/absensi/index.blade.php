@@ -21,6 +21,13 @@
     Import CSV
 
 </button>
+<button class="btn btn-danger"
+    data-bs-toggle="modal"
+    data-bs-target="#modalExportPdf">
+
+    Export PDF
+
+</button>
 
 @endsection
 
@@ -475,6 +482,87 @@
                     <button class="btn btn-success">
 
                         Import
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade"
+    id="modalExportPdf"
+    tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form action="{{ route('absensi.export.pdf') }}"
+                method="POST">
+
+                @csrf
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Export PDF Absensi
+
+                    </h5>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+
+                        <label>Pegawai</label>
+
+                        <select
+                            name="pegawai_id"
+                            class="form-select"
+                            required>
+
+                            @foreach($pegawais as $pegawai)
+
+                            <option value="{{ $pegawai->id }}">
+
+                                {{ $pegawai->nip }} -
+                                {{ $pegawai->nama }}
+
+                            </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Bulan</label>
+
+                        <input
+                            type="month"
+                            name="bulan"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        class="btn btn-danger">
+
+                        Export PDF
 
                     </button>
 

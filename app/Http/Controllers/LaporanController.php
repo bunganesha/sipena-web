@@ -27,23 +27,28 @@ class LaporanController extends Controller
         $status = $request->status;
 
         // QUERY
-        $pegawais = Pegawai::with('absensis')
+        $pegawais = Pegawai::with(['absensis' => function ($q) use ($request) {
+
+            if ($request->bulan) {
+                $q->whereMonth('tanggal', $request->bulan);
+            }
+        }])
 
             // SEARCH
             ->when($search, function ($query) use ($search) {
 
                 $query->where('nama', 'like', "%{$search}%")
                     ->orWhere('nip', 'like', "%{$search}%");
-
             })
 
             // FILTER DIVISI
-            ->when($divisi && $divisi != 'Semua Divisi',
+            ->when(
+                $divisi && $divisi != 'Semua Divisi',
                 function ($query) use ($divisi) {
 
                     $query->where('divisi', $divisi);
-
-                })
+                }
+            )
 
             ->get();
 
@@ -51,40 +56,33 @@ class LaporanController extends Controller
         if ($status && $status != 'Semua Status') {
 
             $pegawais = $pegawais->filter(function ($pegawai)
-                use ($status) {
+            use ($status) {
 
                 return $pegawai->absensis
-                    ->where('status_absensi',
-                        strtolower($status))
+                    ->where(
+                        'status_absensi',
+                        strtolower($status)
+                    )
                     ->count() > 0;
             });
         }
 
         // STATISTIK
-        $hadir = Absensi::where(
-            'status_absensi',
-            'hadir'
-        )->count();
+        $query = Absensi::query();
 
-        $izin = Absensi::where(
-            'status_absensi',
-            'izin'
-        )->count();
+        if ($request->bulan) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
 
-        $sakit = Absensi::where(
-            'status_absensi',
-            'sakit'
-        )->count();
+        $hadir = (clone $query)->where('status_absensi', 'hadir')->count();
 
-        $cuti = Absensi::where(
-            'status_absensi',
-            'cuti'
-        )->count();
+        $izin = (clone $query)->where('status_absensi', 'izin')->count();
 
-        $alpha = Absensi::where(
-            'status_absensi',
-            'alpha'
-        )->count();
+        $sakit = (clone $query)->where('status_absensi', 'sakit')->count();
+
+        $cuti = (clone $query)->where('status_absensi', 'cuti')->count();
+
+        $alpha = (clone $query)->where('status_absensi', 'alpha')->count();
 
         return view('laporan.index', compact(
             'pegawais',
@@ -113,11 +111,65 @@ class LaporanController extends Controller
     // EXPORT PDF
     // =========================
     public function exportPdf()
-{
-    $laporan = Absensi::all();
+    {
+        $laporan = Absensi::all();
 
-    $pdf = Pdf::loadView('laporan.pdf', compact('laporan'));
+        $pdf = Pdf::loadView('laporan.pdf', compact('laporan'));
 
-    return $pdf->download('laporan-absensi.pdf');
-}
+        return $pdf->download('laporan-absensi.pdf');
+    }
+
+    public function exportPdfPegawai(Request $request, Pegawai $pegawai)
+    {
+        $bulan = $request->bulan;
+
+        $laporan = Absensi::where('pegawai_id', $pegawai->id)
+
+            ->when($bulan, function ($q) use ($bulan) {
+
+                $q->whereMonth('tanggal', $bulan);
+            })
+
+            ->orderBy('tanggal')
+
+            ->get();
+
+        $rekap = [
+
+            'hadir' => $laporan->where('status_absensi', 'hadir')->count(),
+
+            'izin' => $laporan->where('status_absensi', 'izin')->count(),
+
+            'sakit' => $laporan->where('status_absensi', 'sakit')->count(),
+
+            'cuti' => $laporan->where('status_absensi', 'cuti')->count(),
+
+            'alpha' => $laporan->where('status_absensi', 'alpha')->count(),
+
+        ];
+
+        $pdf = Pdf::loadView(
+
+            'laporan.pdf_pegawai',
+
+            compact(
+
+                'pegawai',
+
+                'laporan',
+
+                'rekap',
+
+                'bulan'
+
+            )
+
+        );
+
+        return $pdf->download(
+
+            'Absensi-' . $pegawai->nama . '.pdf'
+
+        );
+    }
 }
