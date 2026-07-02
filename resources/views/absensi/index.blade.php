@@ -7,16 +7,16 @@
 @section('page-action')
 
 <button class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#modalTambah">
+    data-bs-toggle="modal"
+    data-bs-target="#modalTambah">
 
     Tambah Absensi
 
 </button>
 
 <button class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#modalImport">
+    data-bs-toggle="modal"
+    data-bs-target="#modalImport">
 
     Import CSV
 
@@ -32,7 +32,7 @@
     <div class="card-body border-bottom py-3">
 
         <form action="/absensi"
-              method="GET">
+            method="GET">
 
             <div class="d-flex align-items-center">
 
@@ -47,10 +47,10 @@
                     <div class="input-icon">
 
                         <input type="text"
-                               name="search"
-                               class="form-control"
-                               placeholder="Search absensi..."
-                               value="{{ request('search') }}">
+                            name="search"
+                            class="form-control"
+                            placeholder="Search absensi..."
+                            value="{{ request('search') }}">
 
                     </div>
 
@@ -142,14 +142,14 @@
                         <div class="btn-list flex-nowrap">
 
                             <a href="/absensi/{{ $item->id }}/edit"
-                               class="btn btn-warning btn-sm">
+                                class="btn btn-warning btn-sm">
 
                                 Edit
 
                             </a>
 
                             <form action="/absensi/{{ $item->id }}"
-                                  method="POST">
+                                method="POST">
 
                                 @csrf
                                 @method('DELETE')
@@ -194,15 +194,15 @@
 
 {{-- MODAL TAMBAH --}}
 <div class="modal modal-blur fade"
-     id="modalTambah"
-     tabindex="-1">
+    id="modalTambah"
+    tabindex="-1">
 
     <div class="modal-dialog modal-lg modal-dialog-centered">
 
         <div class="modal-content">
 
             <form action="/absensi"
-                  method="POST">
+                method="POST">
 
                 @csrf
 
@@ -215,8 +215,8 @@
                     </h5>
 
                     <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
+                        class="btn-close"
+                        data-bs-dismiss="modal">
 
                     </button>
 
@@ -236,7 +236,7 @@
                             </label>
 
                             <select name="pegawai_id"
-                                    class="form-select">
+                                class="form-select">
 
                                 @foreach($pegawais as $pegawai)
 
@@ -262,8 +262,8 @@
                             </label>
 
                             <input type="date"
-                                   name="tanggal"
-                                   class="form-control">
+                                name="tanggal"
+                                class="form-control">
 
                         </div>
 
@@ -277,8 +277,8 @@
                             </label>
 
                             <input type="time"
-                                   name="jam_masuk"
-                                   class="form-control">
+                                name="jam_masuk"
+                                class="form-control">
 
                         </div>
 
@@ -292,8 +292,8 @@
                             </label>
 
                             <input type="time"
-                                   name="jam_keluar"
-                                   class="form-control">
+                                name="jam_keluar"
+                                class="form-control">
 
                         </div>
 
@@ -307,7 +307,7 @@
                             </label>
 
                             <select name="status_absensi"
-                                    class="form-select">
+                                class="form-select">
 
                                 <option value="hadir">
                                     Hadir
@@ -343,8 +343,8 @@
                             </label>
 
                             <input type="text"
-                                   name="keterangan"
-                                   class="form-control">
+                                name="keterangan"
+                                class="form-control">
 
                         </div>
 
@@ -356,8 +356,8 @@
                 <div class="modal-footer">
 
                     <button type="button"
-                            class="btn me-auto"
-                            data-bs-dismiss="modal">
+                        class="btn me-auto"
+                        data-bs-dismiss="modal">
 
                         Batal
 
@@ -382,16 +382,16 @@
 
 {{-- MODAL IMPORT --}}
 <div class="modal modal-blur fade"
-     id="modalImport"
-     tabindex="-1">
+    id="modalImport"
+    tabindex="-1">
 
     <div class="modal-dialog modal-dialog-centered">
 
         <div class="modal-content">
 
             <form action="{{ route('absensi.import') }}"
-                  method="POST"
-                  enctype="multipart/form-data">
+                method="POST"
+                enctype="multipart/form-data">
 
                 @csrf
 
@@ -404,8 +404,8 @@
                     </h5>
 
                     <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
+                        class="btn-close"
+                        data-bs-dismiss="modal">
 
                     </button>
 
@@ -414,9 +414,50 @@
 
                 <div class="modal-body">
 
-                    <input type="file"
-                           name="file"
-                           class="form-control">
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Pegawai
+                        </label>
+
+                        <select
+                            name="pegawai_id"
+                            class="form-select"
+                            required>
+
+                            <option value="">
+                                -- Pilih Pegawai --
+                            </option>
+
+                            @foreach($pegawais as $pegawai)
+
+                            <option value="{{ $pegawai->id }}">
+
+                                {{ $pegawai->nip }}
+                                -
+                                {{ $pegawai->nama }}
+
+                            </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            File Fingerprint
+                        </label>
+
+                        <input
+                            type="file"
+                            name="file"
+                            class="form-control"
+                            required>
+
+                    </div>
 
                 </div>
 
@@ -424,8 +465,8 @@
                 <div class="modal-footer">
 
                     <button type="button"
-                            class="btn me-auto"
-                            data-bs-dismiss="modal">
+                        class="btn me-auto"
+                        data-bs-dismiss="modal">
 
                         Batal
 

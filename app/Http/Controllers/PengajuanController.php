@@ -22,7 +22,11 @@ class PengajuanController extends Controller
 
         $search = $request->search;
 
-        $pengajuans = Pengajuan::with('pegawai')
+        $pengajuans = Pengajuan::with([
+            'pegawai',
+            'pegawai.user',
+            'logs'
+        ])
             ->where('pegawai_id', $pegawai->id)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
@@ -70,6 +74,19 @@ class PengajuanController extends Controller
 
         $jumlahHari = Carbon::parse($request->tanggal_mulai)
             ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
+
+        // =========================
+        // BATAS CUTI MAKSIMAL 3 HARI
+        // =========================
+
+        if (
+            strtolower($request->jenis_pengajuan) == 'cuti' &&
+            $jumlahHari > 3
+        ) {
+            return back()
+                ->withInput()
+                ->with('error', 'Pengajuan cuti maksimal 3 hari.');
+        }
 
         if (
             strtolower($request->jenis_pengajuan) == 'cuti' &&
@@ -132,6 +149,18 @@ class PengajuanController extends Controller
 
         $jumlahHari = Carbon::parse($request->tanggal_mulai)
             ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
+        // =========================
+        // BATAS CUTI MAKSIMAL 3 HARI
+        // =========================
+
+        if (
+            strtolower($request->jenis_pengajuan) == 'cuti' &&
+            $jumlahHari > 3
+        ) {
+            return back()
+                ->withInput()
+                ->with('error', 'Pengajuan cuti maksimal 3 hari.');
+        }
 
         if (
             strtolower($request->jenis_pengajuan) == 'cuti' &&
@@ -189,5 +218,23 @@ class PengajuanController extends Controller
         return redirect()
             ->route('pengajuan.index')
             ->with('success', 'Pengajuan berhasil dihapus.');
+    }
+    public function detail($id)
+    {
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
+
+        $pengajuan = Pengajuan::with([
+            'pegawai.user',
+            'logs'
+        ])->findOrFail($id);
+
+        if ($pengajuan->pegawai_id != $pegawai->id) {
+            abort(403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $pengajuan
+        ]);
     }
 }

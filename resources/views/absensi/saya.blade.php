@@ -35,9 +35,22 @@
                     <td>{{ $item->jam_masuk ?? '-' }}</td>
                     <td>{{ $item->jam_keluar ?? '-' }}</td>
                     <td>
-                        <span class="badge bg-primary-lt">
-                            {{ $item->status_absensi }}
+
+                        @php
+                        $badge = match($item->status_absensi){
+                        'hadir' => 'bg-success-lt text-success',
+                        'izin' => 'bg-warning-lt text-warning',
+                        'sakit' => 'bg-info-lt text-info',
+                        'cuti' => 'bg-purple-lt text-purple',
+                        'alpha' => 'bg-danger-lt text-danger',
+                        default => 'bg-secondary-lt'
+                        };
+                        @endphp
+
+                        <span class="badge {{ $badge }}">
+                            {{ ucfirst($item->status_absensi) }}
                         </span>
+
                     </td>
                     <td>{{ $item->keterangan ?? '-' }}</td>
                 </tr>

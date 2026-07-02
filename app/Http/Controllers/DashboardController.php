@@ -25,19 +25,32 @@ class DashboardController extends Controller
             ->whereDate('tanggal', today())
             ->count();
 
-        $alpha = Absensi::where('status_absensi', 'alpa')
+        $alpha = Absensi::where('status_absensi', 'alpha')
             ->whereDate('tanggal', today())
             ->count();
 
         $pending = Pengajuan::where(function ($q) {
             $q->where('status_spv', 'pending')
-              ->orWhere('status_manager', 'pending')
-              ->orWhere('status_hrd', 'pending');
+                ->orWhere('status_manager', 'pending')
+                ->orWhere('status_hrd', 'pending');
         })->count();
 
-        $absensis = Absensi::with('pegawai')
-            ->whereDate('tanggal', today())
-            ->get();
+        $role = session('role');
+
+        if ($role == 'pegawai') {
+
+            $pegawai = Pegawai::where('user_id', auth()->id())->first();
+
+            $absensis = Absensi::with('pegawai')
+                ->where('pegawai_id', $pegawai->id)
+                ->whereDate('tanggal', today())
+                ->get();
+        } else {
+
+            $absensis = Absensi::with('pegawai')
+                ->whereDate('tanggal', today())
+                ->get();
+        }
 
         return view('dashboard.index', compact(
             'totalPegawai',

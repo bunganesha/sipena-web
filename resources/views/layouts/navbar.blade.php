@@ -91,12 +91,12 @@
                 {{-- DROPDOWN --}}
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
 
-                    <a href="#" class="dropdown-item">
+                    <a href="{{ route('profile.index') }}" class="dropdown-item">
 
                         Profile
 
                     </a>
-                    
+
                     <div class="dropdown-divider"></div>
                     {{-- LOGOUT --}}
                     <form action="{{ route('logout') }}" method="POST">
@@ -129,42 +129,42 @@
                     </li>
                     {{-- MASTER DATA --}}
                     @if (session('role') == 'hrd')
-                        <li class="nav-item dropdown">
+                    <li class="nav-item dropdown">
 
-                            <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
 
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    👨‍💼
-                                </span>
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                👨‍💼
+                            </span>
 
-                                <span class="nav-link-title">
-                                    Master Data
-                                </span>
+                            <span class="nav-link-title">
+                                Master Data
+                            </span>
 
-                            </a>
+                        </a>
 
-                            <ul class="dropdown-menu" aria-labelledby="masterDropdown">
+                        <ul class="dropdown-menu" aria-labelledby="masterDropdown">
 
-                                <li>
-                                    <a class="dropdown-item" href="/pegawai">
+                            <li>
+                                <a class="dropdown-item" href="/pegawai">
 
-                                        Data Pegawai
+                                    Data Pegawai
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
 
-                                <li>
-                                    <a class="dropdown-item" href="/user">
+                            <li>
+                                <a class="dropdown-item" href="/user">
 
-                                        Data User
+                                    Data User
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
 
-                            </ul>
+                        </ul>
 
-                        </li>
+                    </li>
                     @endif
                     {{-- TRANSAKSI --}}
                     <li class="nav-item dropdown">
@@ -186,50 +186,50 @@
 
                             {{-- HRD --}}
                             @if (session('role') == 'hrd')
-                                <li>
-                                    <a class="dropdown-item" href="/absensi">
+                            <li>
+                                <a class="dropdown-item" href="/absensi">
 
-                                        Data Absensi
+                                    Data Absensi
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
 
-                                <li>
-                                    <a class="dropdown-item" href="/approval">
+                            <li>
+                                <a class="dropdown-item" href="/approval">
 
-                                        Approval
+                                    Approval
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
                             @endif
 
                             @if(in_array(session('role'), ['pegawai','spv','manager','hrd']))
-                                <li>
-                                    <a class="dropdown-item" href="/pengajuan">
+                            <li>
+                                <a class="dropdown-item" href="/pengajuan">
 
-                                        Pengajuan
+                                    Pengajuan
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
 
-                                <li>
-                                    <a class="dropdown-item" href="/absensi-saya">
+                            <li>
+                                <a class="dropdown-item" href="/absensi-saya">
 
-                                        Absensi Saya
+                                    Absensi Saya
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
                             @endif
 
                             {{-- MANAGER & SPV --}}
                             @if (session('role') == 'manager' || session('role') == 'spv')
-                                <li>
-                                    <a class="dropdown-item" href="/approval">
+                            <li>
+                                <a class="dropdown-item" href="/approval">
 
-                                        Approval
+                                    Approval
 
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
                             @endif
 
                         </ul>
@@ -238,21 +238,21 @@
 
                     {{-- LAPORAN --}}
                     @if (session('role') == 'hrd')
-                        <li class="nav-item">
+                    <li class="nav-item">
 
-                            <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan">
+                        <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan">
 
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    📄
-                                </span>
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                📄
+                            </span>
 
-                                <span class="nav-link-title">
-                                    Laporan
-                                </span>
+                            <span class="nav-link-title">
+                                Laporan
+                            </span>
 
-                            </a>
+                        </a>
 
-                        </li>
+                    </li>
                     @endif
 
                 </ul>

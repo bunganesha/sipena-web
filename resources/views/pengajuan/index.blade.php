@@ -266,11 +266,8 @@
 
                             <button
                                 class="btn btn-info btn-sm"
-                                data-pengajuan='@json($item)'
-                                onclick="showDetail(this)">
-
+                                onclick="openDetail('{{ $item->id }}')">
                                 Detail
-
                             </button>
 
                         </div>
@@ -643,42 +640,266 @@
 
 </div>
 
+{{-- ========================= --}}
+{{-- MODAL DETAIL --}}
+{{-- ========================= --}}
+
+<div class="modal modal-blur fade" id="modalDetail" tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Detail Pengajuan
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Nama Pegawai
+                        </label>
+
+                        <div id="d_nama">-</div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            NIP
+                        </label>
+
+                        <div id="d_nip">-</div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Jabatan
+                        </label>
+
+                        <div id="d_role">-</div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Jenis Pengajuan
+                        </label>
+
+                        <div id="d_jenis">-</div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Tanggal
+                        </label>
+
+                        <div id="d_tanggal">-</div>
+
+                    </div>
+
+                    <div class="col-12 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Alasan
+                        </label>
+
+                        <div id="d_alasan">-</div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <hr>
+
+                        <div class="d-flex align-items-center mb-3">
+
+                            <span class="fs-3 me-2">
+                                📋
+                            </span>
+
+                            <div>
+
+                                <h4 class="mb-0">
+                                    Riwayat Approval
+                                </h4>
+
+                                <small class="text-secondary">
+
+                                    Status persetujuan berdasarkan alur bisnis SIPENA
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="approval_detail">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Tutup
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 @endsection
 
 @push('scripts')
 
 <script>
-    function showDetail(data) {
+    function openDetail(id) {
 
-        document.getElementById('d_nama').innerText =
-            data.pegawai?.nama ?? '-';
+        fetch('/pengajuan/' + id + '/detail')
 
-        document.getElementById('d_nip').innerText =
-            data.pegawai?.nip ?? '-';
+            .then(response => response.json())
 
-        document.getElementById('d_jenis').innerText =
-            data.jenis_pengajuan ?? '-';
+            .then(response => {
 
-        document.getElementById('d_tanggal').innerText =
-            (data.tanggal_mulai ?? '-') +
-            ' s/d ' +
-            (data.tanggal_selesai ?? '-');
+                const data = response.data;
 
-        document.getElementById('d_alasan').innerText =
-            data.alasan ?? '-';
+                document.getElementById('d_nama').innerText =
+                    data.pegawai.nama;
 
-        document.getElementById('d_spv').innerText =
-            data.status_spv ?? '-';
+                document.getElementById('d_nip').innerText =
+                    data.pegawai.nip;
 
-        document.getElementById('d_manager').innerText =
-            data.status_manager ?? '-';
+                document.getElementById('d_role').innerText =
+                    data.pegawai.user.role.toUpperCase();
 
-        document.getElementById('d_hrd').innerText =
-            data.status_hrd ?? '-';
+                document.getElementById('d_jenis').innerText =
+                    data.jenis_pengajuan.toUpperCase();
 
-        new bootstrap.Modal(
-            document.getElementById('modalDetail')
-        ).show();
+                document.getElementById('d_tanggal').innerText =
+                    data.tanggal_mulai + " s/d " + data.tanggal_selesai;
+
+                document.getElementById('d_alasan').innerText =
+                    data.alasan;
+
+                //--------------------------------------------------
+                // Timeline Approval
+                //--------------------------------------------------
+
+                let html = '';
+
+                if (data.logs.length == 0) {
+
+                    html = `
+            <div class="alert alert-warning">
+                Belum ada approval.
+            </div>
+            `;
+
+                }
+
+                data.logs.forEach(log => {
+
+                    let badge = '';
+
+                    if (log.status == 'approved') {
+
+                        badge =
+                            log.role == 'hrd' ?
+                            '<span class="badge bg-primary">Mengetahui</span>' :
+                            '<span class="badge bg-success">Approved</span>';
+
+                    } else {
+
+                        badge =
+                            '<span class="badge bg-danger">Rejected</span>';
+
+                    }
+
+                    html += `
+
+            <div class="card mb-3">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>${log.role.toUpperCase()}</strong>
+
+                        ${badge}
+
+                    </div>
+
+                    <hr>
+
+                    <small class="text-secondary">
+
+                        ${log.created_at}
+
+                    </small>
+
+                    <br><br>
+
+                    ${
+                        log.alasan
+                        ?
+                        `<b>Catatan</b><br>${log.alasan}`
+                        :
+                        '<i>Tidak ada catatan</i>'
+                    }
+
+                </div>
+
+            </div>
+
+            `;
+
+                });
+
+                document.getElementById('approval_detail').innerHTML = html;
+
+                new bootstrap.Modal(
+                    document.getElementById('modalDetail')
+                ).show();
+
+            });
+
     }
 
     // ============================

@@ -21,13 +21,14 @@ class AbsensiController extends Controller
 
             ->when($search, function ($query) use ($search) {
 
-                $query->whereHas('pegawai',
+                $query->whereHas(
+                    'pegawai',
                     function ($q) use ($search) {
 
-                    $q->where('nama', 'like', "%{$search}%")
-                        ->orWhere('nip', 'like', "%{$search}%");
-                });
-
+                        $q->where('nama', 'like', "%{$search}%")
+                            ->orWhere('nip', 'like', "%{$search}%");
+                    }
+                );
             })
 
             ->latest()
@@ -119,13 +120,23 @@ class AbsensiController extends Controller
     public function import(Request $request)
     {
         $request->validate([
+            'pegawai_id' => 'required|exists:pegawais,id',
             'file' => 'required|mimes:csv,xlsx,xls'
         ]);
 
-        Excel::import(
-            new AbsensiImport,
-            $request->file('file')
-        );
+        try {
+
+            Excel::import(
+                new AbsensiImport($request->pegawai_id),
+                $request->file('file')
+            );
+        } catch (\Exception $e) {
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
+        }
 
         return redirect('/absensi')
             ->with('success', 'Data absensi berhasil diimport');
@@ -133,7 +144,11 @@ class AbsensiController extends Controller
 
     public function absensiSaya()
     {
-        $data = Absensi::with('pegawai')->get();
+        $pegawai = Pegawai::where('user_id', auth()->id())->firstOrFail();
+
+        $data = Absensi::where('pegawai_id', $pegawai->id)
+            ->orderBy('tanggal', 'desc')
+            ->get();
 
         return view('absensi.saya', compact('data'));
     }

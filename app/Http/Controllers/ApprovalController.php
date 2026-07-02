@@ -187,27 +187,29 @@ class ApprovalController extends Controller
             }
         }
 
-        Absensi::firstOrCreate(
+        $mulai = Carbon::parse($pengajuan->tanggal_mulai);
+        $selesai = Carbon::parse($pengajuan->tanggal_selesai);
 
-            [
+        while ($mulai->lte($selesai)) {
 
-                'pegawai_id' => $pengajuan->pegawai_id,
+            Absensi::firstOrCreate(
 
-                'tanggal' => $pengajuan->tanggal_mulai,
+                [
+                    'pegawai_id' => $pengajuan->pegawai_id,
+                    'tanggal'    => $mulai->toDateString(),
+                ],
 
-            ],
+                [
+                    'status_absensi' => $this->mapStatusAbsensi(
+                        $pengajuan->jenis_pengajuan
+                    ),
+                    'keterangan' => $pengajuan->alasan,
+                ]
 
-            [
+            );
 
-                'status_absensi' => $this->mapStatusAbsensi(
-                    $pengajuan->jenis_pengajuan
-                ),
-
-                'keterangan' => $pengajuan->alasan
-
-            ]
-
-        );
+            $mulai->addDay();
+        }
     }
 
     public function update(Request $request, $id)
@@ -267,32 +269,17 @@ class ApprovalController extends Controller
             }
         } elseif ($role == 'hrd') {
 
-            if ($pemohonRole == 'pegawai') {
+            $pengajuan->status_hrd = 'approved';
 
-                if (
-                    $pengajuan->status_spv != 'approved' ||
-                    $pengajuan->status_manager != 'approved' ||
-                    $pengajuan->status_hrd != 'pending'
-                ) {
-                    return back()->with('error', 'Belum sampai tahap HRD.');
-                }
-            } elseif ($pemohonRole == 'spv') {
+            try {
 
-                if (
-                    $pengajuan->status_manager != 'approved' ||
-                    $pengajuan->status_hrd != 'pending'
-                ) {
-                    return back()->with('error', 'Belum sampai tahap HRD.');
-                }
-            } elseif (
-                $pemohonRole == 'manager' ||
-                $pemohonRole == 'hrd'
-            ) {
+                $this->prosesFinalApproval($pengajuan);
+            } catch (\Exception $e) {
 
-                if ($pengajuan->status_hrd != 'pending') {
-
-                    return back()->with('error', 'Pengajuan sudah diproses.');
-                }
+                return back()->with(
+                    'error',
+                    $e->getMessage()
+                );
             }
         }
 
@@ -323,57 +310,6 @@ class ApprovalController extends Controller
             } elseif ($role == 'manager') {
 
                 $pengajuan->status_manager = 'approved';
-            } elseif ($role == 'hrd') {
-
-                $pengajuan->status_hrd = 'approved';
-
-                /*
-            =====================================
-            FINAL APPROVAL
-            =====================================
-            */
-
-                if (strtolower($pengajuan->jenis_pengajuan) == 'cuti') {
-
-                    $pegawai = $pengajuan->pegawai;
-
-                    $jumlahHari =
-                        Carbon::parse($pengajuan->tanggal_mulai)
-                        ->diffInDays(Carbon::parse($pengajuan->tanggal_selesai))
-                        + 1;
-
-                    if ($pegawai->sisa_cuti < $jumlahHari) {
-
-                        return back()->with(
-                            'error',
-                            'Sisa cuti pegawai tidak mencukupi.'
-                        );
-                    }
-
-                    $pegawai->decrement(
-                        'sisa_cuti',
-                        $jumlahHari
-                    );
-                }
-
-                Absensi::firstOrCreate(
-
-                    [
-                        'pegawai_id' => $pengajuan->pegawai_id,
-                        'tanggal' => $pengajuan->tanggal_mulai
-                    ],
-
-                    [
-                        'status_absensi' =>
-                        $this->mapStatusAbsensi(
-                            $pengajuan->jenis_pengajuan
-                        ),
-
-                        'keterangan' =>
-                        $pengajuan->alasan
-                    ]
-
-                );
             }
         }
 
@@ -428,13 +364,13 @@ class ApprovalController extends Controller
     {
         return match (strtolower($jenis)) {
 
-            'cuti' => 'izin',
+            'cuti' => 'cuti',
 
             'izin' => 'izin',
 
             'sakit' => 'sakit',
 
-            default => 'izin',
+            default => 'alpha',
         };
     }
     // =========================

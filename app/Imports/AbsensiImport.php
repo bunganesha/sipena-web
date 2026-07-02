@@ -10,37 +10,71 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class AbsensiImport implements ToCollection
 {
+    private $pegawaiId;
+    public function __construct($pegawaiId)
+    {
+        $this->pegawaiId = $pegawaiId;
+    }
+
     public function collection(Collection $rows)
     {
-        // Ambil NIP dari header
+        // =========================
+        // VALIDASI NIP FILE
+        // =========================
+
         $nipText = $rows[7][10] ?? null;
 
         preg_match('/\d+/', $nipText, $matches);
 
-        $nip = $matches[0] ?? null;
+        $nipFile = $matches[0] ?? null;
 
-        if (!$nip) {
-            return;
-        }
-
-        $pegawai = Pegawai::where('nip', $nip)->first();
+        $pegawai = Pegawai::find($this->pegawaiId);
 
         if (!$pegawai) {
-            return;
+            throw new \Exception('Pegawai tidak ditemukan.');
         }
 
-        // Data absensi mulai setelah header
+        if ($pegawai->nip != $nipFile) {
+            throw new \Exception(
+                'File fingerprint tidak sesuai dengan pegawai yang dipilih.'
+            );
+        }
+        // =========================
+        // CUTI BERSAMA PT DTI 2026
+        // =========================
+        $cutiBersama = [
+            '2026-03-19',
+            '2026-03-20',
+            '2026-03-23',
+            '2026-03-24',
+            '2026-06-15',
+            '2026-08-24',
+        ];
+
         foreach ($rows->slice(10) as $row) {
 
             if (!isset($row[0]) || !is_numeric($row[0])) {
                 continue;
             }
-            // if (!is_numeric($row[0])) {
-            //     dump('SKIP', $row->toArray());
-            //     continue;
-            // }
+
             $tanggal = Date::excelToDateTimeObject($row[0])
                 ->format('Y-m-d');
+
+            $carbonTanggal = \Carbon\Carbon::parse($tanggal);
+
+            // =========================
+            // SKIP SABTU & MINGGU
+            // =========================
+            if ($carbonTanggal->isWeekend()) {
+                continue;
+            }
+
+            // =========================
+            // SKIP CUTI BERSAMA
+            // =========================
+            if (in_array($tanggal, $cutiBersama)) {
+                continue;
+            }
 
             $jamMasuk = !empty($row[2])
                 ? Date::excelToDateTimeObject($row[2])->format('H:i:s')
@@ -54,11 +88,11 @@ class AbsensiImport implements ToCollection
 
             if (!empty($row[14])) {
 
-                $ketidakhadiran = strtoupper(trim($row[14]));
+                $ket = strtoupper(trim($row[14]));
 
-                if ($ketidakhadiran == 'SAKIT') {
+                if ($ket == 'SAKIT') {
                     $status = 'sakit';
-                } elseif ($ketidakhadiran == 'IZIN') {
+                } elseif ($ket == 'IZIN') {
                     $status = 'izin';
                 }
             } elseif ($jamMasuk) {
@@ -66,18 +100,47 @@ class AbsensiImport implements ToCollection
                 $status = 'hadir';
             }
 
-            Absensi::updateOrCreate(
-                [
-                    'pegawai_id' => $pegawai->id,
-                    'tanggal' => $tanggal,
-                ],
-                [
+            // =========================
+            // CEK DATA LAMA
+            // =========================
+            $absensi = Absensi::where('pegawai_id', $this->pegawaiId)
+                ->where('tanggal', $tanggal)
+                ->first();
+
+            // =========================
+            // SUDAH ADA IZIN / SAKIT
+            // DARI SIPENA
+            // =========================
+            if ($absensi) {
+
+                if (
+                    in_array(
+                        $absensi->status_absensi,
+                        ['izin', 'sakit', 'cuti']
+                    )
+                ) {
+                    continue;
+                }
+
+                $absensi->update([
                     'jam_masuk' => $jamMasuk,
                     'jam_keluar' => $jamKeluar,
                     'status_absensi' => $status,
                     'keterangan' => 'Import FingerX',
-                ]
-            );
+                ]);
+            } else {
+
+                Absensi::create([
+
+                    'pegawai_id' => $this->pegawaiId,
+                    'tanggal' => $tanggal,
+                    'jam_masuk' => $jamMasuk,
+                    'jam_keluar' => $jamKeluar,
+                    'status_absensi' => $status,
+                    'keterangan' => 'Import FingerX',
+
+                ]);
+            }
         }
     }
 }

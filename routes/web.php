@@ -10,6 +10,7 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 
 use App\Models\Pegawai;
 use App\Models\Absensi;
@@ -40,6 +41,16 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard');
 });
 
+// ====================== PROFILE ======================
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile.index');
+
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+        ->name('profile.password');
+});
 
 // ====================== PEGAWAI ======================
 
@@ -100,6 +111,8 @@ Route::middleware(['auth', 'role:pegawai,spv,manager,hrd'])->group(function () {
 
         Route::delete('/{id}', [PengajuanController::class, 'destroy'])
             ->name('destroy');
+        Route::get('{id}/detail', [PengajuanController::class, 'detail'])
+            ->name('detail');
     });
 
     Route::get('/absensi-saya', [AbsensiController::class, 'absensiSaya'])
