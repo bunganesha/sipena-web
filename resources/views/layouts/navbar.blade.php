@@ -268,35 +268,7 @@
                     {{-- ========================= --}}
                     @if(session('role') == 'pegawai')
 
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('pengajuan') ? 'active' : '' }}"
-                            href="/pengajuan">
-
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                📝
-                            </span>
-
-                            <span class="nav-link-title">
-                                Pengajuan
-                            </span>
-
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('absensi-saya') ? 'active' : '' }}"
-                            href="/absensi-saya">
-
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                📅
-                            </span>
-
-                            <span class="nav-link-title">
-                                Absensi Saya
-                            </span>
-
-                        </a>
-                    </li>
+                    
 
                     @endif
 
