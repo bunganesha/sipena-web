@@ -140,6 +140,56 @@ class ApprovalController extends Controller
             compact('pengajuans')
         );
     }
+
+    public function riwayat(Request $request)
+    {
+        $role = session('role');
+
+        $search = $request->search;
+
+        $pengajuans = Pengajuan::with([
+            'pegawai',
+            'pegawai.user'
+        ])
+
+            ->when($search, function ($q) use ($search) {
+
+                $q->whereHas('pegawai', function ($qq) use ($search) {
+
+                    $qq->where('nama', 'like', "%$search%")
+                        ->orWhere('nip', 'like', "%$search%");
+                });
+            })
+
+            ->get()
+
+            ->filter(function ($item) use ($role) {
+
+                if ($role == 'spv') {
+
+                    return $item->status_spv != 'pending';
+                }
+
+                if ($role == 'manager') {
+
+                    return $item->status_manager != 'pending';
+                }
+
+                if ($role == 'hrd') {
+
+                    return $item->status_hrd != 'pending';
+                }
+
+                return false;
+            })
+
+            ->values();
+
+        return view(
+            'approval.riwayat',
+            compact('pengajuans')
+        );
+    }
     // ===================================================
     // ROLE PEMOHON
     // ===================================================

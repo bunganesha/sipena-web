@@ -170,6 +170,8 @@ Route::middleware(['auth', 'role:hrd,manager,spv'])->group(function () {
             ->name('update');
         Route::get('/{id}/detail', [ApprovalController::class, 'detail'])
             ->name('detail');
+        Route::get('/riwayat', [ApprovalController::class, 'riwayat'])
+            ->name('riwayat');
     });
 });
 

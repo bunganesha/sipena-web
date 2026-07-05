@@ -1,10 +1,91 @@
 {{-- ========================= --}}
+{{-- PROFILE --}}
+{{-- ========================= --}}
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <h2 class="mb-1">
+                    Halo, {{ $pegawai->nama }}
+                </h2>
+
+                <div class="text-secondary">
+                    {{ ucfirst(session('role')) }} • {{ $pegawai->divisi }}
+                </div>
+
+                <div class="mt-3">
+
+                    <span class="badge bg-primary-lt">
+                        NIP : {{ $pegawai->nip }}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="row text-center">
+
+                    <div class="col-6">
+
+                        <div class="text-secondary small">
+
+                            Sisa Cuti
+
+                        </div>
+
+                        <div class="h1 text-success">
+
+                            {{ $pegawai->sisa_cuti }}
+
+                        </div>
+
+                        <small>Hari</small>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="text-secondary small">
+
+                            Kehadiran
+
+                        </div>
+
+                        <div class="h1 text-primary">
+
+                            {{ $hadirSaya }}
+
+                        </div>
+
+                        <small>Hari</small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- ========================= --}}
 {{-- SUMMARY --}}
 {{-- ========================= --}}
 
-<div class="row row-deck row-cards">
+<div class="row row-deck row-cards mb-4">
 
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-lg-3">
 
         <div class="card card-sm">
 
@@ -21,11 +102,15 @@
                     <div>
 
                         <div class="text-secondary">
-                            Menunggu Persetujuan
+
+                            Approval Pending
+
                         </div>
 
                         <div class="fs-1 fw-bold text-warning">
+
                             {{ $pendingManager }}
+
                         </div>
 
                     </div>
@@ -38,8 +123,7 @@
 
     </div>
 
-
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-lg-3">
 
         <div class="card card-sm">
 
@@ -49,18 +133,22 @@
 
                     <span class="avatar bg-success text-white me-3">
 
-                        <i class="ti ti-circle-check"></i>
+                        <i class="ti ti-check"></i>
 
                     </span>
 
                     <div>
 
                         <div class="text-secondary">
-                            Disetujui
+
+                            Pengajuan Saya
+
                         </div>
 
                         <div class="fs-1 fw-bold text-success">
-                            {{ $approveManager }}
+
+                            {{ $pengajuanSaya }}
+
                         </div>
 
                     </div>
@@ -73,8 +161,7 @@
 
     </div>
 
-
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-lg-3">
 
         <div class="card card-sm">
 
@@ -82,20 +169,62 @@
 
                 <div class="d-flex align-items-center">
 
-                    <span class="avatar bg-danger text-white me-3">
+                    <span class="avatar bg-primary text-white me-3">
 
-                        <i class="ti ti-circle-x"></i>
+                        <i class="ti ti-calendar"></i>
 
                     </span>
 
                     <div>
 
                         <div class="text-secondary">
-                            Ditolak
+
+                            Sisa Cuti
+
                         </div>
 
-                        <div class="fs-1 fw-bold text-danger">
-                            {{ $rejectManager }}
+                        <div class="fs-1 fw-bold text-primary">
+
+                            {{ $pegawai->sisa_cuti }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+
+        <div class="card card-sm">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+
+                    <span class="avatar bg-info text-white me-3">
+
+                        <i class="ti ti-calendar-check"></i>
+
+                    </span>
+
+                    <div>
+
+                        <div class="text-secondary">
+
+                            Kehadiran
+
+                        </div>
+
+                        <div class="fs-1 fw-bold text-info">
+
+                            {{ $hadirSaya }}
+
                         </div>
 
                     </div>
@@ -111,25 +240,88 @@
 </div>
 
 
+<div class="row">
 
-{{-- ========================= --}}
-{{-- CONTENT --}}
-{{-- ========================= --}}
+    {{-- PROFIL --}}
+    <div class="col-lg-4">
 
-<div class="row mt-4">
+        <div class="card">
 
-    {{-- LIST PENGAJUAN --}}
+            <div class="card-body text-center">
+
+                <span class="avatar avatar-xl bg-primary text-white mb-3">
+                    {{ strtoupper(substr($pegawai->nama,0,1)) }}
+                </span>
+
+                <h3 class="mb-1">{{ $pegawai->nama }}</h3>
+
+                <div class="text-secondary">
+                    {{ $pegawai->jabatan }}
+                </div>
+
+                <div class="text-secondary">
+                    {{ $pegawai->divisi }}
+                </div>
+
+                <hr>
+
+                <div class="row">
+
+                    <div class="col-6">
+
+                        <div class="h2 text-success">
+                            {{ $sisaCuti }}
+                        </div>
+
+                        <small class="text-secondary">
+                            Sisa Cuti
+                        </small>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="h2 text-primary">
+                            {{ $hadirSaya }}
+                        </div>
+
+                        <small class="text-secondary">
+                            Hadir
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    {{-- PENGAJUAN --}}
     <div class="col-lg-8">
 
         <div class="card">
 
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between">
 
                 <h3 class="card-title">
 
-                    Pengajuan Menunggu Persetujuan Manager
+                    Pengajuan Saya
 
                 </h3>
+
+                <button
+                    class="btn btn-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalTambah">
+
+                    + Ajukan
+
+                </button>
 
             </div>
 
@@ -141,11 +333,9 @@
 
                         <tr>
 
-                            <th>Pegawai</th>
                             <th>Jenis</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status SPV</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
 
                         </tr>
 
@@ -153,41 +343,74 @@
 
                     <tbody>
 
-                        @forelse($pengajuanManager as $item)
+                        @forelse($pegawai->pengajuans as $item)
 
-                            <tr>
+                        @php
 
-                                <td>{{ $item->pegawai->nama }}</td>
+                        if($item->status_hrd=='approved'){
+                        $status='Approved';
+                        $badge='success';
+                        }
+                        elseif(
+                        $item->status_spv=='rejected' ||
+                        $item->status_manager=='rejected' ||
+                        $item->status_hrd=='rejected'
+                        ){
+                        $status='Rejected';
+                        $badge='danger';
+                        }
+                        else{
+                        $status='Pending';
+                        $badge='warning';
+                        }
 
-                                <td>{{ ucfirst($item->jenis_pengajuan) }}</td>
+                        @endphp
 
-                                <td>{{ $item->tanggal_mulai }}</td>
+                        <tr>
 
-                                <td>{{ $item->tanggal_selesai }}</td>
+                            <td>{{ ucfirst($item->jenis_pengajuan) }}</td>
 
-                                <td>
+                            <td>
 
-                                    <span class="badge bg-success-lt">
+                                {{ $item->tanggal_mulai }}
 
-                                        {{ ucfirst($item->status_spv) }}
+                                @if($item->tanggal_mulai != $item->tanggal_selesai)
 
-                                    </span>
+                                <br>
 
-                                </td>
+                                <small class="text-secondary">
 
-                            </tr>
+                                    s/d {{ $item->tanggal_selesai }}
+
+                                </small>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-{{ $badge }}">
+
+                                    {{ $status }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
 
                         @empty
 
-                            <tr>
+                        <tr>
 
-                                <td colspan="5" class="text-center">
+                            <td colspan="3" class="text-center">
 
-                                    Tidak ada pengajuan yang perlu diproses.
+                                Belum ada pengajuan.
 
-                                </td>
+                            </td>
 
-                            </tr>
+                        </tr>
 
                         @endforelse
 
@@ -202,95 +425,181 @@
     </div>
 
 
-
-    {{-- QUICK MENU --}}
-    <div class="col-lg-4">
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <h3 class="card-title">
-
-                    Quick Menu
-
-                </h3>
-
-            </div>
-
-            <div class="list-group list-group-flush">
-
-                <a href="{{ route('approval.index') }}"
-                    class="list-group-item list-group-item-action">
-
-                    ✅ Approval Pengajuan
-
-                </a>
-
-                <a href="{{ route('pengajuan.index') }}"
-                    class="list-group-item list-group-item-action">
-
-                    📄 Riwayat Pengajuan
-
-                </a>
-
-                <a href="{{ route('profile.index') }}"
-                    class="list-group-item list-group-item-action">
-
-                    ⚙️ Profil Saya
-
-                </a>
-
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="card mt-3">
 
-            <div class="card-header">
+{{-- ========================= --}}
+{{-- MODAL TAMBAH --}}
+{{-- ========================= --}}
 
-                <h3 class="card-title">
+<div class="modal modal-blur fade" id="modalTambah" tabindex="-1">
 
-                    Ringkasan Approval
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                </h3>
+        <div class="modal-content">
 
-            </div>
+            <form
+                action="/pengajuan"
+                method="POST"
+                id="formTambahPengajuan">
 
-            <div class="list-group list-group-flush">
+                @csrf
 
-                <div class="list-group-item d-flex justify-content-between">
+                <div class="modal-header">
 
-                    <span>🟡 Pending</span>
+                    <h5 class="modal-title">
 
-                    <span class="badge bg-warning">
-                        {{ $pendingManager }}
-                    </span>
+                        Tambah Pengajuan
+
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
 
                 </div>
 
-                <div class="list-group-item d-flex justify-content-between">
+                <div class="modal-body">
 
-                    <span>🟢 Approved</span>
+                    <div class="row">
 
-                    <span class="badge bg-success">
-                        {{ $approveManager }}
-                    </span>
+                        {{-- Pegawai --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Pegawai
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="{{ auth()->user()->pegawai->nama ?? session('username') }}"
+                                readonly>
+
+                        </div>
+
+                        {{-- Jenis --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Jenis Pengajuan
+
+                            </label>
+
+                            <select
+                                name="jenis_pengajuan"
+                                class="form-select"
+                                required>
+
+                                <option value="">Pilih Jenis</option>
+
+                                <option value="cuti">
+
+                                    Cuti
+
+                                </option>
+
+                                <option value="izin">
+
+                                    Izin
+
+                                </option>
+
+                                <option value="sakit">
+
+                                    Sakit
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        {{-- Mulai --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Tanggal Mulai
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="tanggal_mulai"
+                                class="form-control"
+                                min="{{ date('Y-m-d') }}"
+                                required>
+
+                        </div>
+
+                        {{-- Selesai --}}
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Tanggal Selesai
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="tanggal_selesai"
+                                class="form-control"
+                                min="{{ date('Y-m-d') }}"
+                                required>
+
+                        </div>
+
+                        {{-- Alasan --}}
+                        <div class="col-12">
+
+                            <label class="form-label">
+
+                                Alasan
+
+                            </label>
+
+                            <textarea
+                                name="alasan"
+                                rows="4"
+                                class="form-control"
+                                required></textarea>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="list-group-item d-flex justify-content-between">
+                <div class="modal-footer">
 
-                    <span>🔴 Rejected</span>
+                    <button
+                        type="button"
+                        class="btn me-auto"
+                        data-bs-dismiss="modal">
 
-                    <span class="badge bg-danger">
-                        {{ $rejectManager }}
-                    </span>
+                        Batal
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                        Simpan Pengajuan
+
+                    </button>
 
                 </div>
 
-            </div>
+            </form>
 
         </div>
 

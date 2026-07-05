@@ -201,9 +201,14 @@
 
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('approval.riwayat') }}">
+                                    Riwayat Approval
+                                </a>
+                            </li>
                             @endif
 
-                            @if(in_array(session('role'), ['pegawai','spv','manager','hrd']))
+                            @if(in_array(session('role'), ['spv','manager','hrd']))
                             <li>
                                 <a class="dropdown-item" href="/pengajuan">
 
@@ -228,6 +233,11 @@
 
                                     Approval
 
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('approval.riwayat') }}">
+                                    Riwayat Approval
                                 </a>
                             </li>
                             @endif

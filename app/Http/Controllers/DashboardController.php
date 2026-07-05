@@ -92,8 +92,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-
-
         // =========================
         // PEGAWAI
         // =========================
@@ -114,12 +112,17 @@ class DashboardController extends Controller
             $hadirSaya = Absensi::where(
                 'pegawai_id',
                 $pegawai->id
-            )->where(
-                'status_absensi',
-                'hadir'
-            )->count();
-        }
+            )
+                ->where('status_absensi', 'hadir')
+                ->count();
 
+            // load relasi supaya bisa dipakai di blade
+            $pegawai->load([
+                'pengajuans' => function ($q) {
+                    $q->latest()->take(5);
+                }
+            ]);
+        }
 
 
         // =========================
@@ -148,30 +151,35 @@ class DashboardController extends Controller
             'role',
             'pegawai',
 
+            // HRD
             'totalPegawai',
             'hadir',
             'izin',
             'sakit',
             'cuti',
             'alpha',
-
             'pendingHrd',
 
+            // SPV
             'pendingSpv',
             'approveSpv',
             'rejectSpv',
             'pengajuanSpv',
 
+            // Manager
             'pendingManager',
             'approveManager',
             'rejectManager',
             'pengajuanManager',
 
+            // Pegawai
             'pengajuanSaya',
             'sisaCuti',
             'hadirSaya',
 
+            // Tabel Absensi
             'absensis'
+
         ));
     }
 }
