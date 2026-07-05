@@ -177,7 +177,7 @@
                             </span>
 
                             <span class="nav-link-title">
-                                Transaksi
+                                Administrasi
                             </span>
 
                         </a>
