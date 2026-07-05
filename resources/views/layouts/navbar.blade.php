@@ -166,11 +166,18 @@
 
                     </li>
                     @endif
-                    {{-- TRANSAKSI --}}
+                    {{-- ========================= --}}
+                    {{-- ADMINISTRASI (HRD/SPV/MANAGER) --}}
+                    {{-- ========================= --}}
+                    @if(in_array(session('role'), ['hrd','spv','manager']))
+
                     <li class="nav-item dropdown">
 
-                        <a class="nav-link dropdown-toggle" href="#" id="transaksiDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="transaksiDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown">
 
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 📅
@@ -182,69 +189,116 @@
 
                         </a>
 
-                        <ul class="dropdown-menu" aria-labelledby="transaksiDropdown">
+                        <ul class="dropdown-menu">
 
                             {{-- HRD --}}
-                            @if (session('role') == 'hrd')
+                            @if(session('role') == 'hrd')
+
                             <li>
                                 <a class="dropdown-item" href="/absensi">
-
                                     Data Absensi
-
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item" href="/approval">
-
                                     Approval
-
                                 </a>
                             </li>
+
                             <li>
                                 <a class="dropdown-item" href="{{ route('approval.riwayat') }}">
                                     Riwayat Approval
                                 </a>
                             </li>
-                            @endif
 
-                            @if(in_array(session('role'), ['spv','manager','hrd']))
                             <li>
                                 <a class="dropdown-item" href="/pengajuan">
-
                                     Pengajuan
-
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item" href="/absensi-saya">
-
                                     Absensi Saya
-
                                 </a>
                             </li>
+
                             @endif
 
-                            {{-- MANAGER & SPV --}}
-                            @if (session('role') == 'manager' || session('role') == 'spv')
+
+                            {{-- SPV & MANAGER --}}
+                            @if(in_array(session('role'), ['spv','manager']))
+
                             <li>
-                                <a class="dropdown-item" href="/approval">
-
-                                    Approval
-
+                                <a class="dropdown-item" href="/pengajuan">
+                                    Pengajuan
                                 </a>
                             </li>
+
+                            <li>
+                                <a class="dropdown-item" href="/absensi-saya">
+                                    Absensi Saya
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="/approval">
+                                    Approval
+                                </a>
+                            </li>
+
                             <li>
                                 <a class="dropdown-item" href="{{ route('approval.riwayat') }}">
                                     Riwayat Approval
                                 </a>
                             </li>
+
                             @endif
 
                         </ul>
 
                     </li>
+
+                    @endif
+
+
+                    {{-- ========================= --}}
+                    {{-- MENU PEGAWAI --}}
+                    {{-- ========================= --}}
+                    @if(session('role') == 'pegawai')
+
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('pengajuan') ? 'active' : '' }}"
+                            href="/pengajuan">
+
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                📝
+                            </span>
+
+                            <span class="nav-link-title">
+                                Pengajuan
+                            </span>
+
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('absensi-saya') ? 'active' : '' }}"
+                            href="/absensi-saya">
+
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                📅
+                            </span>
+
+                            <span class="nav-link-title">
+                                Absensi Saya
+                            </span>
+
+                        </a>
+                    </li>
+
+                    @endif
 
                     {{-- LAPORAN --}}
                     @if (session('role') == 'hrd')
